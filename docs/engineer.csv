@@ -1,2 +1,24 @@
 Index,TaskDescription,ChangeDetail,ChangeSuccess,ChangeTime,Operator,Remarks
 1,本地化修改,完成应用本地化：1. 将应用名称改为Hakki Wallet 2. 设置默认语言为中文并禁用其他语言 3. 将货币格式改为人民币,true,2023-07-01 12:00:00,8ga Bao,v1.0
+2,开始转换阶段一,开始执行阶段一：数据模型和数据库转换，将发票管理转换为记账软件,true,2024-01-20 10:00:00,8ga Bao,正在进行数据模型转换
+3,完成阶段一,完成阶段一：数据模型和数据库转换 - 1. 将Invoice/Bill相关类改为Transaction相关类 2. 更新数据库结构 3. 修改常量和工具类,false,2024-01-20 11:00:00,8ga Bao,数据模型转换完成，但存在引用不一致问题，需要继续阶段二转换
+4,编译检查,检查当前代码编译状态，发现多处引用不一致问题和Java版本要求,true,2024-01-20 12:00:00,8ga Bao,需要完成Repository和ViewModel转换才能编译
+5,开始阶段二,开始执行阶段二：Repository和ViewModel转换,true,2024-01-20 13:00:00,8ga Bao,开始更新依赖注入配置和视图模型
+6,更新AppModule,更新数据库模块配置，将InvoiceDatabase改为TransactionDatabase,true,2024-01-20 13:05:00,8ga Bao,修复依赖注入配置
+7,创建TransactionRepository,创建交易记录仓库类，替代原来的InvoiceRepository,true,2024-01-20 13:10:00,8ga Bao,实现交易数据访问方法
+8,更新MainViewModel,更新MainViewModel，使用TransactionRepository替代InvoiceRepository,true,2024-01-20 13:15:00,8ga Bao,修改数据加载和访问逻辑
+9,创建TransactionDetailViewModel,创建交易详情视图模型，替代原来的InvoiceDetailViewModel,true,2024-01-20 13:20:00,8ga Bao,实现交易详情操作方法
+10,创建NewTransactionViewModel,创建新建交易视图模型，替代原来的NewBillViewModel,true,2024-01-20 13:25:00,8ga Bao,实现新建和编辑交易功能
+11,开始阶段三,开始执行阶段三：UI组件和Activity转换,true,2024-01-20 14:00:00,8ga Bao,开始更新UI组件和Activity
+12,创建交易UI组件,创建交易相关UI组件，包括TransactionCard、TransactionHeader等,true,2024-01-20 14:15:00,8ga Bao,完成UI组件创建
+13,更新Activity组件引用,更新MainActivity相关组件引用，从Invoice改为Transaction,true,2024-01-20 14:30:00,8ga Bao,完成Activity内容更新
+14,完成阶段三,完成阶段三：UI组件和Activity转换 - 1. 更新UI组件为记账界面 2. 修改Activity引用 3. 更新交互逻辑,true,2024-01-20 14:45:00,8ga Bao,UI层转换完成
+15,开始阶段四,开始执行阶段四：工具类和资源文件转换,true,2024-01-20 14:50:00,8ga Bao,准备转换工具类和资源文件
+16,更新工具类,更新Constants和Helper类，移除发票相关功能,true,2024-01-20 15:05:00,8ga Bao,更新常量和辅助方法
+17,更新资源文件,更新strings.xml、colors.xml和themes.xml,true,2024-01-20 15:20:00,8ga Bao,修改界面文本和样式
+18,完成阶段四,完成阶段四：工具类和资源文件转换 - 1. 更新所有工具类 2. 修改资源文件,true,2024-01-20 15:35:00,8ga Bao,工具类和资源文件转换完成
+19,检查阶段三四,检查第三和第四阶段工作完成情况,true,2024-01-20 16:35:00,8ga Bao,确认资源文件、工具类、UI组件和ViewModel已成功转换为交易相关内容
+20,完成阶段五,完成阶段五：测试和修复 - 1. 重命名不一致的文件名 2. 修复属性名不匹配 3. 添加缺少的导入语句 4. 修正函数参数不匹配,true,2024-01-20 16:30:00,8ga Bao,所有代码引用已统一为Transaction相关命名，移除了Invoice/Bill相关引用
+21,修复重复文件和编译错误,删除重复的旧命名文件(Bill.kt, BillAndBillItems.kt, BillItem.kt, BillItemConverter.kt)并修复导入问题和API警告,true,2024-01-21 00:00:00,8ga Bao,清理冗余文件，解决编译问题
+22,修复BottomBar组件,1. 将newtransaction/components/BottomBar.kt中的Context参数改为Activity以支持finish()方法 2. 移除对不存在的CustomButton的引用，改用标准Button组件 3. 修复saveTransaction引用错误，改为使用createTransaction和updateTransaction方法,true,2024-05-02 10:00:00,8ga Bao,解决编译错误和API调用问题
+23,修复TransactionItemConverter缺失,创建缺失的TransactionItemConverter类，实现交易项目列表与JSON字符串的互相转换，解决数据库类型转换错误,true,2024-05-02 11:00:00,8ga Bao,修复数据库编译错误

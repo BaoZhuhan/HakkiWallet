@@ -4,81 +4,87 @@
     <!-- 按钮文本 -->
     <string name="button_delete">删除</string>
     <string name="button_edit">编辑</string>
-    <string name="button_mark_as_paid">标记为已支付</string>
     <string name="button_cancel">取消</string>
     <string name="button_discard">放弃</string>
     <string name="button_save_as_draft">保存为草稿</string>
-    <string name="button_save_and_send">保存并发送</string>
     <string name="button_save_changes">保存更改</string>
-    <string name="button_add_new_item">+添加新项目</string>
+    <string name="button_add_new_item">+添加新条目</string>
     <string name="button_ok">确定</string>
     <string name="button_cancel_dialog">取消</string>
     
     <!-- 状态文本 -->
-    <string name="status_paid">已支付</string>
-    <string name="status_pending">待支付</string>
+    <string name="status_active">已确认</string>
     <string name="status_draft">草稿</string>
     
+    <!-- 交易类型 -->
+    <string name="type_income">收入</string>
+    <string name="type_expense">支出</string>
+    
+    <!-- 交易分类 -->
+    <string name="category_food">餐饮</string>
+    <string name="category_transport">交通</string>
+    <string name="category_shopping">购物</string>
+    <string name="category_entertainment">娱乐</string>
+    <string name="category_housing">住房</string>
+    <string name="category_utilities">水电</string>
+    <string name="category_salary">工资</string>
+    <string name="category_investment">投资</string>
+    <string name="category_other">其他</string>
+    
     <!-- 标签文本 -->
-    <string name="label_due">到期日：</string>
-    <string name="label_next_days">未来 %d 天</string>
+    <string name="label_date">日期：</string>
     
     <!-- 输入框标题 -->
-    <string name="input_item_name">项目名称</string>
-    <string name="input_quantity">数量</string>
-    <string name="input_price">价格</string>
+    <string name="input_item_name">条目名称</string>
+    <string name="input_amount">金额</string>
     <string name="input_total">总计</string>
     <string name="input_created_date">创建日期</string>
-    <string name="input_payment_terms">付款期限</string>
     <string name="input_description">描述</string>
-    <string name="input_client_name">客户名称</string>
-    <string name="input_client_email">客户邮箱</string>
-    <string name="input_street">街道</string>
-    <string name="input_city">城市</string>
-    <string name="input_post_code">邮政编码</string>
-    <string name="input_postal_code">邮政编码</string>
-    <string name="input_country">国家</string>
-    <string name="input_street_address">街道地址</string>
-    <string name="item_list">项目列表</string>
-    <string name="invoice_count_singular">%d 个发票</string>
-    <string name="invoice_count_plural">%d 个发票</string>
-    <string name="no_invoices">没有发票</string>
-    <string name="invoices">发票</string>
-    <string name="due_date">到期日：%s</string>
-    <string name="amount_due">应付金额</string>
-    <string name="status">状态</string>
-    <string name="invoice_date">发票日期</string>
-    <string name="payment_date">付款日期</string>
-    <string name="bill_to">抬头</string>
-    <string name="sent_to">发送至</string>
-    <string name="new_invoice">新建发票</string>
-    <string name="bill_from">开票方</string>
-    <string name="project_description">项目描述</string>
+    <string name="input_payee">收款方/付款方</string>
+    <string name="input_transaction_type">交易类型</string>
+    <string name="input_transaction_category">交易分类</string>
+    <string name="input_transaction_date">交易日期</string>
+    <string name="item_list">条目列表</string>
+    <string name="transaction_count_singular">%d 笔交易</string>
+    <string name="transaction_count_plural">%d 笔交易</string>
+    <string name="no_transactions">没有交易</string>
+    <string name="transactions">交易</string>
+    <string name="transaction_date">交易日期</string>
+    <string name="transaction_amount">交易金额</string>
+    <string name="transaction_type">交易类型</string>
+    <string name="transaction_category">交易分类</string>
+    <string name="new_transaction">新建交易</string>
+    <string name="transaction_description">交易描述</string>
     
     <!-- 主界面 -->
-    <string name="main_title">发票</string>
-    <string name="main_empty_state">暂无发票</string>
-    <string name="main_empty_state_description">您还没有任何发票，请创建一个新发票</string>
+    <string name="main_title">记账</string>
+    <string name="main_empty_state">暂无交易记录</string>
+    <string name="main_empty_state_description">您还没有任何交易记录，请创建一笔新交易</string>
     <string name="main_filter_all">全部</string>
-    <string name="main_filter_pending">待支付</string>
-    <string name="main_filter_paid">已支付</string>
-    <string name="main_add_invoice">新建发票</string>
+    <string name="main_filter_income">收入</string>
+    <string name="main_filter_expense">支出</string>
+    <string name="main_add_transaction">新建交易</string>
     
     <!-- 详情页面 -->
-    <string name="detail_amount_due">应付金额</string>
-    <string name="detail_from">从</string>
-    <string name="detail_to">至</string>
+    <string name="detail_amount">交易金额</string>
     <string name="detail_created">创建时间</string>
-    <string name="detail_payment_due">付款期限</string>
     <string name="detail_description">描述</string>
-    <string name="detail_payment_terms">付款条件</string>
-    <string name="detail_client_info">客户信息</string>
-    <string name="detail_sender_info">发件人信息</string>
+    <string name="detail_transaction_info">交易信息</string>
+    <string name="detail_payee_info">收款方/付款方信息</string>
+    <string name="detail_item_list">条目明细</string>
     
-    <!-- 新建发票页面 -->
-    <string name="new_invoice_title">新建发票</string>
+    <!-- 新建交易页面 -->
+    <string name="new_transaction_title">新建交易</string>
+    <string name="edit_transaction_title">编辑交易</string>
     
     <!-- 确认对话框 -->
     <string name="confirm_delete_title">确认删除</string>
-    <string name="confirm_delete_message">确定要删除这个发票吗？此操作无法撤销。</string>
+    <string name="confirm_delete_message">确定要删除这笔交易吗？此操作无法撤销。</string>
+    
+    <!-- 统计相关 -->
+    <string name="total_income">总收入</string>
+    <string name="total_expense">总支出</string>
+    <string name="net_balance">结余</string>
+    <string name="month_summary">月度汇总</string>
+    <string name="year_summary">年度汇总</string>
 </resources>

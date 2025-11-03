@@ -12,26 +12,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.account.model.Invoice
+import com.example.account.model.Transaction
 import com.example.account.utils.Constants
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
-fun Body(modifier: Modifier, invoices: List<Invoice>?, context: Context) {
-    if (invoices?.isNotEmpty() == true) {
+fun Body(modifier: Modifier, transactions: List<Transaction>?, context: Context) {
+    if (transactions?.isNotEmpty() == true) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(Constants.outerPadding),
             verticalArrangement = Arrangement.spacedBy(15.dp),
         ) {
-            items(invoices) { invoice ->
-                InvoiceCard(context, invoice, modifier = Modifier.animateItemPlacement())
+            items(transactions) { transaction ->
+                TransactionCard(transaction, modifier = Modifier.animateItemPlacement())
             }
         }
     } else {
-        NoInvoiceBody(modifier)
+        NoTransactionBody()
     }
 }

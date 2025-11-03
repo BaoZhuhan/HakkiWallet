@@ -1,0 +1,30 @@
+package com.example.account.db.dao
+
+import androidx.lifecycle.LiveData
+import androidx.room.*
+import com.example.account.model.Transaction
+
+/**
+ * 交易记录DAO接口
+ * 提供交易记录的数据库操作方法
+ */
+@Dao
+interface TransactionDao {
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addTransaction(transaction: Transaction)
+
+    @Query("SELECT * FROM transactions")
+    fun readAllTransactions(): LiveData<List<Transaction>>
+
+    @Query("SELECT * FROM transactions WHERE id=:id")
+    fun getTransactionById(id: String?): LiveData<Transaction>
+
+    @Update
+    suspend fun updateTransaction(transaction: Transaction)
+
+    @Delete
+    suspend fun deleteTransaction(transaction: Transaction)
+
+    @Query("SELECT * FROM transactions WHERE transactionType = :type")
+    fun getTransactionsByType(type: String): LiveData<List<Transaction>>
+}

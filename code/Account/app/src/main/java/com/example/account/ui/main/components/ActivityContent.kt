@@ -18,7 +18,7 @@ import com.example.account.viewmodel.MainViewModel
 @ExperimentalMaterialApi
 @Composable
 fun ActivityContent(context: Context, mainViewModel: MainViewModel) {
-    val invoices by mainViewModel.invoices.observeAsState()
+    val transactions by mainViewModel.transactions.observeAsState()
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -29,7 +29,7 @@ fun ActivityContent(context: Context, mainViewModel: MainViewModel) {
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
         ) {
-            InvoiceHeader(num = invoices?.size)
+            TransactionHeader()
             Buttons(modifier = Modifier.align(Alignment.CenterVertically), context)
         }
         Column(
@@ -39,7 +39,7 @@ fun ActivityContent(context: Context, mainViewModel: MainViewModel) {
         ) {
             Body(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                invoices = invoices,
+                transactions = transactions,
                 context = context
             )
         }

@@ -2,7 +2,9 @@ package com.example.account.module
 
 import android.content.Context
 import androidx.room.Room
-import com.example.account.db.InvoiceDatabase
+import com.example.account.db.TransactionDatabase
+import com.example.account.db.dao.TransactionDao
+import com.example.account.db.dao.TransactionItemDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,20 +18,20 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideInvoicesDatabase(
+    fun provideTransactionDatabase(
         @ApplicationContext app: Context
     ) = Room.databaseBuilder(
         app,
-        InvoiceDatabase::class.java,
-        "invoices_db"
+        TransactionDatabase::class.java,
+        "transactions_db"
     ).build()
 
     @Singleton
     @Provides
-    fun provideInvoiceDao(db: InvoiceDatabase) = db.getInvoiceDao()
+    fun provideTransactionDao(db: TransactionDatabase): TransactionDao = db.getTransactionDao()
 
     @Singleton
     @Provides
-    fun provideInvoiceItemDao(db: InvoiceDatabase) = db.getInvoiceItemDao()
+    fun provideTransactionItemDao(db: TransactionDatabase): TransactionItemDao = db.getTransactionItemDao()
 
 }

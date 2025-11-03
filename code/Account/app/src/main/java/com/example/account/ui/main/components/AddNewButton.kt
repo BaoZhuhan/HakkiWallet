@@ -23,7 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.account.R
-import com.example.account.ui.newinvoice.NewInvoiceActivity
+import com.example.account.ui.newtransaction.NewTransactionActivity
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -34,7 +34,7 @@ fun AddNewButton(modifier: Modifier, context: Context) {
         modifier = modifier
             .clip(RoundedCornerShape(90.dp))
             .clickable {
-                val intent = Intent(context, NewInvoiceActivity::class.java)
+                val intent = Intent(context, NewTransactionActivity::class.java)
                 context.startActivity(intent)
             }
             .background(color = MaterialTheme.colors.primary)

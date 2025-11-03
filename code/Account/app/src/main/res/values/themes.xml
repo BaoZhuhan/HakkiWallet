@@ -2,6 +2,19 @@
 <resources>
 
     <style name="Theme.Account" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/purple_700</item>
+        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+    </style>
+    
+    <!-- 用于记账软件的暗色主题 -->
+    <style name="Theme.Account.Dark" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:colorBackground">#FF121212</item>
+        <item name="android:windowBackground">#FF121212</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">#FFB0B0B0</item>
     </style>
 </resources>
