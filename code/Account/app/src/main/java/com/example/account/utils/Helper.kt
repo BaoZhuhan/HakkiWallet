@@ -38,10 +38,10 @@ fun getInvoiceDateForDbFormat(invoiceDate: String): String {
 
 fun getInvoiceDate(invoiceDate: String): String {
     return try {
-        val originalFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val originalFormat = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA)
         val calendar: Calendar = Calendar.getInstance()
         calendar.time = originalFormat.parse(invoiceDate)
-        val newFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+        val newFormat = SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA)
         return newFormat.format(calendar.time)
     } catch (e: Exception) {
         ""
@@ -50,11 +50,11 @@ fun getInvoiceDate(invoiceDate: String): String {
 
 fun getDueDate(invoiceDate: String, paymentTerms: Int): String {
     return try {
-        val originalFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val originalFormat = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA)
         val calendar: Calendar = Calendar.getInstance()
         calendar.time = originalFormat.parse(invoiceDate)
         calendar.add(Calendar.DATE, paymentTerms)
-        val newFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+        val newFormat = SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA)
         newFormat.format(calendar.time)
     } catch (e: Exception) {
         ""
@@ -84,7 +84,11 @@ fun getItemTotal(item: InvoiceItem): String {
 
 fun getItemTotal(price: Float, quantity: Int): String {
     val total = price * quantity
-    return total.toBigDecimal().setScale(2, RoundingMode.HALF_DOWN).toDouble().toString()
+    return getCurrencyInstance(Locale.CHINA)
+        .format(total.toBigDecimal().setScale(2, RoundingMode.HALF_DOWN).toDouble()).replace(
+            Currency.getInstance(Locale.CHINA).symbol,
+            "${Currency.getInstance(Locale.CHINA).symbol} "
+        )
 }
 
 fun getPrice(price: Float): String {

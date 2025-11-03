@@ -4,20 +4,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.example.account.R
 
 @Composable
 fun InvoiceHeader(num: Int?) {
-    var numInvoice = "No invoices"
+    var numInvoice = stringResource(id = R.string.no_invoices)
     if (num != null && num > 0) {
         numInvoice = if (num > 1) {
-            "$num invoices"
+            stringResource(id = R.string.invoice_count_plural, num)
         } else {
-            "$num invoice"
+            stringResource(id = R.string.invoice_count_singular, num)
         }
     }
     Column {
         Text(
-            "Invoices",
+            stringResource(id = R.string.invoices),
             color = MaterialTheme.colors.onBackground,
             style = MaterialTheme.typography.h1
         )

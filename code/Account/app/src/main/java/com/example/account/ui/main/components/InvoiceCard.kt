@@ -14,7 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.account.R
 import com.example.account.model.Invoice
 import com.example.account.ui.invoicedetail.InvoiceDetailActivity
 import com.example.account.ui.shared.InvoiceId
@@ -65,7 +67,7 @@ fun InvoiceCard(context: Context, invoice: Invoice, modifier: Modifier) {
             ) {
                 Column {
                     Text(
-                        text = "Due ${getDueDate(invoice.invoiceDate, invoice.paymentTerms)}",
+                        text = stringResource(id = R.string.due_date, getDueDate(invoice.invoiceDate, invoice.paymentTerms)),
                         style = MaterialTheme.typography.subtitle1,
                         color = MaterialTheme.colors.onBackground,
                         modifier = Modifier.padding(bottom = 5.dp)

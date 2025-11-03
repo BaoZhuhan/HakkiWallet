@@ -27,6 +27,8 @@ import com.example.account.utils.Constants
 import com.example.account.viewmodel.NewInvoiceViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.ui.res.stringResource
+import com.example.account.R
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -66,7 +68,7 @@ fun ActivityContent(
         }
         if (items.isNotEmpty()) {
             item {
-                ItemListHeader("Item List")
+                ItemListHeader(stringResource(id = R.string.item_list))
             }
         }
         itemsIndexed(items) { _, item ->

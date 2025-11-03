@@ -48,14 +48,14 @@ fun AddNewButton(modifier: Modifier, context: Context) {
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_icon_plus),
-                    "New",
+                    "新建",
                     tint = MaterialTheme.colors.primary,
                     modifier = Modifier
                         .align(Alignment.Center)
                 )
             }
             Text(
-                "New", color = MaterialTheme.colors.onPrimary,
+                "新建", color = MaterialTheme.colors.onPrimary,
                 style = MaterialTheme.typography.button,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)

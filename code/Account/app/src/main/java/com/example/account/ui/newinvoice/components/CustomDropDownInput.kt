@@ -55,13 +55,13 @@ fun CustomDropDownInput(
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 readOnly = true,
-                value = "Next $value Days",
+                value = "${value}天后",
                 shape = RoundedCornerShape(4.dp),
                 textStyle = MaterialTheme.typography.h3,
                 onValueChange = {},
                 trailingIcon = {
                     Icon(
-                        painter = painterResource(R.drawable.ic_icon_arrow_down), "payment terms",
+                        painter = painterResource(R.drawable.ic_icon_arrow_down), "付款条款",
                         tint = MaterialTheme.colors.primary,
                     )
                 },
@@ -89,7 +89,7 @@ fun CustomDropDownInput(
                             expanded = false
                         }
                     ) {
-                        Text(text = "Next $selectionOption Days")
+                        Text(text = "${selectionOption}天后")
                     }
                 }
             }

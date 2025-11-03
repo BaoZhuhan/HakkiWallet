@@ -13,6 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.example.account.R
 import com.example.account.model.Invoice
 import com.example.account.utils.getInvoiceDate
 import com.example.account.utils.getInvoiceDateForDbFormat
@@ -47,8 +49,8 @@ fun InvoiceDetailInput(
     var description by rememberSaveable { mutableStateOf(invoice.description) }
 
     Column(modifier = Modifier.padding(bottom = 50.dp)) {
-        Heading("New Invoice", invoice, isNew)
-        SubHeading("Bill From")
+        Heading(stringResource(id = R.string.new_invoice), invoice, isNew)
+        SubHeading(stringResource(id = R.string.bill_from))
         AddressInput(
             street = senderAddressStreet,
             city = senderAddressCity,
@@ -72,7 +74,7 @@ fun InvoiceDetailInput(
             },
             toggleBottomBar = toggleBottomBar
         )
-        SubHeading("Bill To")
+        SubHeading(stringResource(id = R.string.bill_to))
         ClientInput(
             name = clientName,
             email = clientEmail,
@@ -110,7 +112,7 @@ fun InvoiceDetailInput(
             toggleBottomBar = toggleBottomBar
         )
         CustomCalendarInput(
-            header = "Invoice Date",
+            header = stringResource(id = R.string.invoice_date),
             value = invoiceDate,
             modifier = Modifier.fillMaxWidth(),
             toggleBottomBar = toggleBottomBar,
@@ -122,7 +124,7 @@ fun InvoiceDetailInput(
             }
         )
         CustomDropDownInput(
-            header = "Payment Terms",
+            header = stringResource(id = R.string.input_payment_terms),
             value = paymentTerms,
             modifier = Modifier.fillMaxWidth(),
             toggleBottomBar = toggleBottomBar,
@@ -132,7 +134,7 @@ fun InvoiceDetailInput(
             }
         )
         CustomTextInput(
-            header = "Project Description",
+            header = stringResource(id = R.string.project_description),
             value = description,
             modifier = Modifier.fillMaxWidth(),
             toggleBottomBar = toggleBottomBar,

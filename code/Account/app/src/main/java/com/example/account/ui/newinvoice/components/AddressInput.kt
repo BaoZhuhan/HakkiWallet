@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.account.R
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -26,7 +28,7 @@ fun AddressInput(
 ) {
     Column {
         CustomTextInput(
-            header = "Street Address",
+            header = stringResource(id = R.string.input_street_address),
             value = street,
             modifier = Modifier.fillMaxWidth(),
             toggleBottomBar = toggleBottomBar,
@@ -34,7 +36,7 @@ fun AddressInput(
         )
         Row(modifier = Modifier.fillMaxWidth()) {
             CustomTextInput(
-                header = "City",
+                header = stringResource(id = R.string.input_city),
                 value = city,
                 modifier = Modifier
                     .weight(1f)
@@ -43,7 +45,7 @@ fun AddressInput(
                 onClick = onClickCity
             )
             CustomTextInput(
-                header = "Postal Code",
+                header = stringResource(id = R.string.input_postal_code),
                 value = postCode,
                 modifier = Modifier
                     .weight(1f)
@@ -53,7 +55,7 @@ fun AddressInput(
             )
         }
         CustomTextInput(
-            header = "Country",
+            header = stringResource(id = R.string.input_country),
             value = country,
             modifier = Modifier.fillMaxWidth(),
             toggleBottomBar = toggleBottomBar,

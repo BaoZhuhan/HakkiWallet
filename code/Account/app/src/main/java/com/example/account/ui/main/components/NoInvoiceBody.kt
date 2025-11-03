@@ -21,20 +21,20 @@ fun NoInvoiceBody(modifier: Modifier) {
             .height(IntrinsicSize.Min)
     ) {
         Icon(
-            painter = painterResource(R.drawable.ic_illustration_empty), "No Invoice",
+            painter = painterResource(R.drawable.ic_illustration_empty), "没有发票",
             tint = Color.Unspecified,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .size(200.dp)
         )
         Text(
-            "There is nothing here",
+            "这里没有内容",
             color = MaterialTheme.colors.onBackground,
             style = MaterialTheme.typography.h1,
             textAlign = TextAlign.Center
         )
         Text(
-            "Create an invoice by clicking on New button and get started",
+            "点击新建按钮创建发票并开始使用",
             color = MaterialTheme.colors.onBackground,
             style = MaterialTheme.typography.h4,
             textAlign = TextAlign.Center,

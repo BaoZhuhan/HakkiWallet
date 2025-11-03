@@ -16,11 +16,11 @@ import com.example.account.R
 fun FilterButton(modifier: Modifier) {
     Row(modifier = modifier) {
         Text(
-            "Filter", color = MaterialTheme.colors.onBackground,
+            "筛选", color = MaterialTheme.colors.onBackground,
             style = MaterialTheme.typography.h3,
         )
         Icon(
-            painter = painterResource(R.drawable.ic_icon_arrow_down), "Filter List",
+            painter = painterResource(R.drawable.ic_icon_arrow_down), "筛选列表",
             tint = MaterialTheme.colors.primary,
             modifier = Modifier
                 .padding(top = 5.dp, start = 10.dp, end = 20.dp)

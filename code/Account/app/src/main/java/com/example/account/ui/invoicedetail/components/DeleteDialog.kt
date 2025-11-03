@@ -37,15 +37,15 @@ fun DeleteDialog(
             title = {
                 Text(
                     modifier = Modifier.padding(bottom = 5.dp),
-                    text = "Confirm Deletion",
+                    text = "确认删除",
                     fontSize = 22.sp,
                     color = MaterialTheme.colors.onBackground,
                 )
             },
             text = {
                 Text(
-                    text = "Are you sure you want to delete invoice " +
-                            "#${invoice.id}? This action cannot be undone.",
+                    text = "确定要删除发票 " +
+                            "#${invoice.id}？此操作无法撤销。",
                     lineHeight = 20.sp,
                     style = MaterialTheme.typography.subtitle1,
                     color = MaterialTheme.colors.onSurface,

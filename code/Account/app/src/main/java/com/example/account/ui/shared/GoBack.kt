@@ -25,14 +25,14 @@ fun GoBack(activity: Activity) {
         .padding(top = 20.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
     ) {
         Icon(
-            painter = painterResource(R.drawable.ic_icon_arrow_left), "Go back",
+            painter = painterResource(R.drawable.ic_icon_arrow_left), "返回",
             tint = MaterialTheme.colors.primary,
             modifier = Modifier
                 .padding(end = 20.dp)
                 .align(Alignment.CenterVertically)
         )
         Text(
-            "Go back", color = MaterialTheme.colors.onBackground,
+            "返回", color = MaterialTheme.colors.onBackground,
             style = MaterialTheme.typography.h3,
         )
     }

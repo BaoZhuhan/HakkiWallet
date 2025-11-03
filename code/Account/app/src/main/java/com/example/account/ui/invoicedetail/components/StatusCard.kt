@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.account.R
 import com.example.account.model.enums.InvoiceStatus
 import com.example.account.ui.shared.StatusButton
 import com.example.account.utils.Constants
@@ -34,7 +36,7 @@ fun StatusCard(status: InvoiceStatus) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Status",
+                    text = stringResource(id = R.string.status),
                     style = MaterialTheme.typography.subtitle1,
                     color = MaterialTheme.colors.onBackground,
                     modifier = Modifier.padding(bottom = 5.dp)

@@ -44,7 +44,7 @@ fun TopAppBar(showGoBack: Boolean, activity: Activity?) {
                     )
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_logo), "Logo",
+                    painter = painterResource(R.drawable.ic_logo), "标志",
                     tint = MaterialTheme.colors.onPrimary,
                     modifier = Modifier
                         .padding(start = 20.dp, end = 20.dp)
@@ -53,7 +53,7 @@ fun TopAppBar(showGoBack: Boolean, activity: Activity?) {
             }
             Row {
                 Icon(
-                    painter = painterResource(R.drawable.ic_icon_sun), "Change Theme",
+                    painter = painterResource(R.drawable.ic_icon_sun), "切换主题",
                     tint = MaterialTheme.colors.onSurface,
                     modifier = Modifier
                         .padding(start = 20.dp, end = 20.dp)
@@ -66,7 +66,7 @@ fun TopAppBar(showGoBack: Boolean, activity: Activity?) {
                         .width(0.2.dp)
                 )
                 Image(
-                    painter = painterResource(R.drawable.image_avatar), "Profile Pic",
+                    painter = painterResource(R.drawable.image_avatar), "个人头像",
                     modifier = Modifier
                         .padding(start = 20.dp, end = 20.dp)
                         .clip(shape = CircleShape)

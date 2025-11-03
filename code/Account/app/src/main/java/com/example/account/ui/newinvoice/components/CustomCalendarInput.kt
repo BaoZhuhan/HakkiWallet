@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.account.R
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -39,8 +40,8 @@ fun CustomCalendarInput(
     MaterialDialog(
         dialogState = dialogState,
         buttons = {
-            positiveButton("Ok")
-            negativeButton("Cancel")
+            positiveButton(stringResource(id = R.string.button_ok))
+            negativeButton(stringResource(id = R.string.button_cancel))
         },
         content = content
     )
@@ -85,7 +86,7 @@ fun CustomCalendarInput(
                     color = MaterialTheme.colors.onBackground,
                 )
                 Icon(
-                    painter = painterResource(R.drawable.ic_icon_calendar), "calendar",
+                    painter = painterResource(R.drawable.ic_icon_calendar), "日历",
                     tint = MaterialTheme.colors.primary,
                 )
             }

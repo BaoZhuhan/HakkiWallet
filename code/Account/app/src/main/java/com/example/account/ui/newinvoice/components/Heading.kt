@@ -14,7 +14,7 @@ fun Heading(
 ) {
     var title = heading
     if (!isNew) {
-        title = "Edit #${invoice.id}"
+        title = "编辑 #${invoice.id}"
     }
     Text(
         text = title,

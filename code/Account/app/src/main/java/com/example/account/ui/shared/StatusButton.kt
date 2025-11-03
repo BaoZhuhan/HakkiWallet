@@ -10,9 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.account.R
 import com.example.account.model.enums.InvoiceStatus
 import com.example.account.ui.theme.*
 
@@ -20,17 +22,17 @@ import com.example.account.ui.theme.*
 fun StatusButton(modifier: Modifier, type: InvoiceStatus) {
     var backgroundColor = ColorPaidBackground
     var foregroundColor = ColorPaidForeground
-    var text = "Paid"
+    var text = stringResource(id = R.string.status_paid)
     when (type) {
         InvoiceStatus.Pending -> {
             backgroundColor = ColorPendingBackground
             foregroundColor = ColorPendingForeground
-            text = "Pending"
+            text = stringResource(id = R.string.status_pending)
         }
         InvoiceStatus.Draft -> {
             backgroundColor = ColorDraftBackground
             foregroundColor = ColorDraftForeground
-            text = "Draft"
+            text = stringResource(id = R.string.status_draft)
         }
         else -> {}
     }

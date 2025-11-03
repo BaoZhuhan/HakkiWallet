@@ -3,7 +3,9 @@ package com.example.account.ui.invoicedetail.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.account.R
 import com.example.account.model.Invoice
 import com.example.account.ui.shared.InvoiceId
 import com.example.account.utils.getDueDate
@@ -25,22 +27,22 @@ fun Body(invoice: Invoice) {
                 modifier = Modifier.fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                SubTitle(title = "Invoice Date", date = getInvoiceDate(invoice.invoiceDate))
+                SubTitle(title = stringResource(id = R.string.invoice_date), date = getInvoiceDate(invoice.invoiceDate))
                 SubTitle(
-                    title = "Payment Date",
+                    title = stringResource(id = R.string.payment_date),
                     date = getDueDate(invoice.invoiceDate, invoice.paymentTerms)
                 )
             }
             Column {
                 SubTitle(
-                    title = "Bill To",
+                    title = stringResource(id = R.string.bill_to),
                     date = invoice.clientName,
                     modifier = Modifier.padding(bottom = 10.dp)
                 )
                 Address(invoice.clientAddress)
             }
         }
-        SubTitle(title = "Sent to", date = invoice.clientEmail)
+        SubTitle(title = stringResource(id = R.string.sent_to), date = invoice.clientEmail)
         ItemsCard(invoice)
     }
 }

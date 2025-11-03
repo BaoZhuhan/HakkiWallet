@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.account.R
 import com.example.account.model.InvoiceItem
@@ -35,7 +36,7 @@ fun InvoiceItemInput(
 
     Column(modifier = Modifier.padding(bottom = 30.dp)) {
         CustomTextInput(
-            header = "Item Name",
+            header = stringResource(id = R.string.input_item_name),
             value = name,
             modifier = Modifier.fillMaxWidth(),
             toggleBottomBar = toggleBottomBar,
@@ -46,7 +47,7 @@ fun InvoiceItemInput(
         )
         Row(modifier = Modifier.fillMaxWidth()) {
             CustomNumberInput(
-                header = "Qty.",
+                header = stringResource(id = R.string.input_quantity),
                 value = qty,
                 modifier = Modifier
                     .weight(0.7f)
@@ -66,7 +67,7 @@ fun InvoiceItemInput(
                 }
             )
             CustomPriceInput(
-                header = "Price",
+                header = stringResource(id = R.string.input_price),
                 value = price,
                 modifier = Modifier
                     .weight(1.1f)
@@ -87,14 +88,14 @@ fun InvoiceItemInput(
                 }
             )
             CustomTotal(
-                header = "Total",
+                header = stringResource(id = R.string.input_total),
                 value = total,
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 10.dp),
             )
             Icon(
-                painter = painterResource(R.drawable.ic_icon_delete), "delete",
+                painter = painterResource(R.drawable.ic_icon_delete), "删除",
                 tint = MaterialTheme.colors.onSurface,
                 modifier = modifier
                     .align(Alignment.CenterVertically)
