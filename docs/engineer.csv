@@ -1,0 +1,2 @@
+Index,TaskDescription,ChangeDetail,ChangeSuccess,ChangeTime,Operator,Remarks
+1,本地化修改,完成应用本地化：1. 将应用名称改为Hakki Wallet 2. 设置默认语言为中文并禁用其他语言 3. 将货币格式改为人民币,true,2023-07-01 12:00:00,8ga Bao,v1.0

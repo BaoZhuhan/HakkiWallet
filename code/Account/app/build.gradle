@@ -1,0 +1,111 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+}
+
+android {
+    compileSdk 34
+
+    namespace "com.example.account"
+
+    defaultConfig {
+        applicationId "com.example.account"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.5.4'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+ext {
+    // 🚨 修复 3: 升级 Compose 库版本
+    compose_version = '1.5.4'
+    // 🚨 修复 3: 升级 Hilt 版本
+    hilt_version = '2.48.1'
+    // 🚨 修复 3: 升级 Room 版本
+    room_version = '2.6.1'
+    // 🚨 修复 3: 升级 Lifecycle 版本
+    lifecycle_aware_version = '2.6.2'
+    // Accompanist 已经停止开发，但我们先保持版本不变，后续再考虑迁移
+    accompanist_version = '0.23.0'
+}
+
+dependencies {
+    // 依赖库升级
+    implementation 'androidx.core:core-ktx:1.9.0' // 升级
+
+    // Compose 核心库
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+    // 升级 Activity Compose
+    implementation 'androidx.activity:activity-compose:1.8.0'
+
+    // Room 库
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+
+    // Hilt 库
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    // Kapt 依赖必须和 Hilt 库版本一致
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
+    // Room 编译器必须和 Room 库版本一致
+    kapt "androidx.room:room-compiler:$room_version"
+
+    // 其他库
+    implementation 'androidx.datastore:datastore-preferences:1.0.0' // 保持
+    implementation 'com.google.code.gson:gson:2.10.1' // 升级 Gson 版本到 2.10.1
+
+    // Lifecycle 库
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_aware_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_aware_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_aware_version"
+
+    // Accompanist 库
+    implementation "com.google.accompanist:accompanist-insets:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-insets-ui:$accompanist_version"
+    implementation "io.github.vanpra.compose-material-dialogs:datetime:0.6.3" // 保持
+
+    testImplementation 'junit:junit:4.13.2'
+
+    // Android Test
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5' // 升级
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1' // 升级
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
+
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version" // 新增，Compose 1.2+ 推荐
+}
