@@ -13,10 +13,7 @@ import com.example.account.viewmodel.NewTransactionViewModel
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
-fun TransactionInfoInput(
-    newTransactionViewModel: NewTransactionViewModel,
-    toggleBottomBar: (Boolean) -> Unit
-) {
+fun TransactionInfoInput(newTransactionViewModel: NewTransactionViewModel) {
     // 确保currentTransaction不为null
     val transaction = newTransactionViewModel.currentTransaction ?: Transaction()
     
@@ -26,6 +23,13 @@ fun TransactionInfoInput(
             label = "交易日期",
             value = transaction.transactionDate,
             onValueChange = { transaction.transactionDate = it }
+        )
+        // 交易描述
+        CustomTextInput(
+            label = "交易描述",
+            value = transaction.description,
+            onValueChange = { transaction.description = it },
+            placeholder = "输入交易描述"
         )
         // 交易类型（收入/支出）
         CustomDropDownInput(
@@ -40,26 +44,6 @@ fun TransactionInfoInput(
             options = getCategoryOptions(transaction.transactionType),
             selectedOption = transaction.category,
             onOptionSelected = { transaction.category = it }
-        )
-        // 交易金额
-        CustomPriceInput(
-            label = "交易金额",
-            value = run {
-                val amount = newTransactionViewModel.getTransactionAmount()
-                if (amount == 0f) "" else amount.toString()
-            },
-            onValueChange = { newAmount ->
-                val amount = if (newAmount.isEmpty()) 0f else (newAmount.toFloatOrNull() ?: 0f)
-                newTransactionViewModel.updateTransactionAmount(amount)
-            },
-            modifier = Modifier
-        )
-        // 交易描述
-        CustomTextInput(
-            label = "交易描述",
-            value = transaction.description,
-            onValueChange = { transaction.description = it },
-            placeholder = "输入交易描述（可选）"
         )
     }
 }

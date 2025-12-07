@@ -22,6 +22,9 @@ fun Body(transaction: Transaction) {
     Column(modifier = Modifier.padding(16.dp)) {
         // 交易信息
         TransactionInfoSection(transaction)
+        
+        // 交易项目列表
+        TransactionItemsSection(transaction.items)
     }
 }
 
@@ -31,10 +34,6 @@ private fun TransactionInfoSection(transaction: Transaction) {
         InfoRow(label = "交易日期", value = transaction.transactionDate)
         InfoRow(label = "交易类型", value = getTransactionTypeName(transaction.transactionType))
         InfoRow(label = "交易分类", value = transaction.category)
-        InfoRow(label = "交易金额", value = String.format("¥%.2f", calculateTotal(transaction.items)))
-        if (transaction.description.isNotEmpty()) {
-            InfoRow(label = "交易描述", value = transaction.description)
-        }
         InfoRow(label = "交易状态", value = getStatusName(transaction.status))
     }
 }
@@ -57,6 +56,69 @@ private fun InfoRow(label: String, value: String) {
         )
     }
 }
+
+@Composable
+private fun TransactionItemsSection(items: List<TransactionItem>) {
+    Column {
+        Text(
+            text = "交易项目",
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        items.forEachIndexed { index, item ->
+            ItemRow(
+                index = index + 1,
+                name = item.name,
+                amount = item.amount
+            )
+        }
+        TotalRow(total = calculateTotal(items))
+    }
+}
+
+@Composable
+private fun ItemRow(index: Int, name: String, amount: Float) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 6.dp)) {
+        Text(
+            text = "$index.",
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.width(30.dp)
+        )
+        Text(
+            text = name,
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = "¥${amount.toString()}",
+            style = MaterialTheme.typography.body1
+        )
+    }
+}
+
+@Composable
+private fun TotalRow(total: Double) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 12.dp)
+        .border(1.dp, MaterialTheme.colors.onBackground.copy(alpha = 0.3f))
+        .padding(top = 12.dp)) {
+        Text(
+            text = "总计",
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = String.format("¥%.2f", total),
+            style = MaterialTheme.typography.h6,
+            color = MaterialTheme.colors.primary
+        )
+    }
+}
+
+// 移除不再需要的formatDate函数，直接使用transactionDate字符串
 
 private fun getTransactionTypeName(type: String): String {
     return if (type == Constants.INCOME_TYPE) "收入" else "支出"
