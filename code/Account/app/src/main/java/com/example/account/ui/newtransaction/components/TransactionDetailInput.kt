@@ -30,7 +30,7 @@ fun TransactionDetailInput(
         TransactionInfoInput(newTransactionViewModel)
         SubHeading(title = "交易项目")
         ItemListHeader()
-        TransactionItemInput(newTransactionViewModel, toggleBottomBar)
+        TransactionItemInput(newTransactionViewModel)
         CustomTotal(newTransactionViewModel)
     }
 }

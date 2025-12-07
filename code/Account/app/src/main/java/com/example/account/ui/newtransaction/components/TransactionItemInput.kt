@@ -15,12 +15,21 @@ import com.example.account.viewmodel.NewTransactionViewModel
 @ExperimentalMaterialApi
 @Composable
 fun TransactionItemInput(
-    newTransactionViewModel: NewTransactionViewModel,
-    toggleBottomBar: (Boolean) -> Unit
+    newTransactionViewModel: NewTransactionViewModel
 ) {
     val transaction = newTransactionViewModel.transaction
 
     Column {
+        CustomTextInput(
+            label = "交易编号",
+            value = transaction.id,
+            onValueChange = { newId ->
+                newTransactionViewModel.onTransactionChange(transaction.copy(id = newId))
+            },
+            placeholder = "输入交易编号",
+            modifier = Modifier.fillMaxWidth()
+        )
+
         // 显示现有的项目
         transaction.items.forEachIndexed { index, item ->
             Row(

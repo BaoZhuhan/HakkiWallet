@@ -32,12 +32,17 @@ class NewTransactionViewModel @Inject constructor(
     // 是否为新交易
     private var isNew by mutableStateOf(true)
 
+    private var originalTransactionId: String? = null
+
     /**
      * 设置交易数据，如果为null则创建新交易
      */
     fun setTransactionData(transaction: Transaction?) {
         isNew = transaction == null
         this.transaction = transaction ?: Transaction()
+        if (!isNew) {
+            originalTransactionId = transaction?.id
+        }
     }
 
     fun onTransactionChange(newTransaction: Transaction) {
@@ -60,7 +65,14 @@ class NewTransactionViewModel @Inject constructor(
         if (isNew) {
             createTransaction(transaction)
         } else {
-            updateTransaction(transaction)
+            viewModelScope.launch(Dispatchers.IO + NonCancellable) {
+                originalTransactionId?.let { oldId ->
+                    if (oldId != transaction.id) {
+                        repository.updateTransactionId(oldId, transaction.id)
+                    }
+                }
+                repository.updateTransaction(transaction)
+            }
         }
     }
 
