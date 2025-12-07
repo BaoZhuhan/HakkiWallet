@@ -16,13 +16,11 @@ import com.example.account.R
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddNewItemButton(
-    onClick: () -> Unit,
-    toggleBottomBar: (Boolean) -> Unit
+    onClick: () -> Unit
 ) {
     Surface(
-        onClick = { 
+        onClick = {
             onClick()
-            toggleBottomBar(false)
         },
         color = MaterialTheme.colors.surface,
         modifier = Modifier
