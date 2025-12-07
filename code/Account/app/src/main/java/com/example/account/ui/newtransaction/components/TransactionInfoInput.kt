@@ -23,8 +23,8 @@ fun TransactionInfoInput(
     val transaction = newTransactionViewModel.currentTransaction ?: Transaction()
     
     // 确保至少有一个TransactionItem用于存储金额
-    LaunchedEffect(transaction.id) {
-        if (transaction.items.isEmpty() && transaction.id.isNotEmpty()) {
+    LaunchedEffect(Unit) {
+        if (transaction.items.isEmpty()) {
             transaction.items.add(TransactionItem(
                 parentTransactionId = transaction.id,
                 name = "交易金额",
@@ -57,17 +57,20 @@ fun TransactionInfoInput(
         // 交易金额
         CustomPriceInput(
             label = "交易金额",
-            value = if (transaction.items.isNotEmpty()) transaction.items[0].amount.toString() else "0",
+            value = if (transaction.items.isNotEmpty()) {
+                val amount = transaction.items[0].amount
+                if (amount == 0f) "" else amount.toString()
+            } else "",
             onValueChange = { newAmount ->
                 try {
-                    val amount = newAmount.toFloatOrNull() ?: 0f
-                    if (transaction.items.isEmpty() && transaction.id.isNotEmpty()) {
+                    val amount = if (newAmount.isEmpty()) 0f else (newAmount.toFloatOrNull() ?: 0f)
+                    if (transaction.items.isEmpty()) {
                         transaction.items.add(TransactionItem(
                             parentTransactionId = transaction.id,
                             name = "交易金额",
                             amount = amount
                         ))
-                    } else if (transaction.items.isNotEmpty()) {
+                    } else {
                         transaction.items[0].amount = amount
                     }
                 } catch (e: Exception) {
