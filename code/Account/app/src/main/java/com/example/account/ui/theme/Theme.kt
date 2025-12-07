@@ -5,6 +5,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.account.viewmodel.ThemeViewModel
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorPalette = darkColors(
@@ -37,27 +41,12 @@ private val LightColorPalette = lightColors(
     onError = ColorWhite
 )
 
-@Composable
-fun getCardOnCardColor(darkTheme: Boolean = isSystemInDarkTheme()): Color {
-    return if (darkTheme) {
-        ColorCardOnCardDark
-    } else {
-        ColorCardOnCardLight
-    }
-}
 
 @Composable
-fun getCardOnCardBlackColor(darkTheme: Boolean = isSystemInDarkTheme()): Color {
-    return if (darkTheme) {
-        ColorBlack
-    } else {
-        ColorBackgroundLight
-    }
-}
-
-@Composable
-fun AccountTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) {
+fun AccountTheme(content: @Composable () -> Unit) {
+    val themeViewModel: ThemeViewModel = hiltViewModel()
+    val isDarkTheme by themeViewModel.isDarkTheme.collectAsState()
+    val colors = if (isDarkTheme) {
         DarkColorPalette
     } else {
         LightColorPalette

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import com.example.account.viewmodel.ThemeViewModel
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -15,6 +16,9 @@ import androidx.compose.ui.Modifier
 @Composable
 fun Buttons(modifier: Modifier, context: Context) {
     Row(modifier = modifier) {
+        ThemeToggleButton(
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
         FilterButton(
             modifier = Modifier.align(Alignment.CenterVertically)
         )

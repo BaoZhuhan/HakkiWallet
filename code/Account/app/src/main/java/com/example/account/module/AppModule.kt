@@ -1,37 +1,22 @@
 package com.example.account.module
 
 import android.content.Context
-import androidx.room.Room
-import com.example.account.db.TransactionDatabase
-import com.example.account.db.dao.TransactionDao
-import com.example.account.db.dao.TransactionItemDao
+import com.example.account.preference.UserPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    @Singleton
     @Provides
-    fun provideTransactionDatabase(
-        @ApplicationContext app: Context
-    ) = Room.databaseBuilder(
-        app,
-        TransactionDatabase::class.java,
-        "transactions_db"
-    ).build()
-
     @Singleton
-    @Provides
-    fun provideTransactionDao(db: TransactionDatabase): TransactionDao = db.getTransactionDao()
-
-    @Singleton
-    @Provides
-    fun provideTransactionItemDao(db: TransactionDatabase): TransactionItemDao = db.getTransactionItemDao()
-
+    fun provideUserPreferences(@ApplicationContext context: Context): UserPreferences {
+        return UserPreferences(context)
+    }
 }
+

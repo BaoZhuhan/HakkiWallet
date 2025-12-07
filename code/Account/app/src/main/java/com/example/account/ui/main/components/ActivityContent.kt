@@ -12,6 +12,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.account.viewmodel.MainViewModel
+import com.example.account.viewmodel.ThemeViewModel
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -30,7 +31,10 @@ fun ActivityContent(context: Context, mainViewModel: MainViewModel) {
                 .height(IntrinsicSize.Min)
         ) {
             TransactionHeader()
-            Buttons(modifier = Modifier.align(Alignment.CenterVertically), context)
+            Buttons(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                context = context
+            )
         }
         Column(
             modifier = Modifier.fillMaxSize(),
