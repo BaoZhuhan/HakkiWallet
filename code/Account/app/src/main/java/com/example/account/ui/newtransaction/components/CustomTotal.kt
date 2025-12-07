@@ -24,7 +24,7 @@ fun CustomTotal(newTransactionViewModel: NewTransactionViewModel) {
             color = MaterialTheme.colors.onBackground
         )
         Text(
-            text = "¥${newTransactionViewModel.calculateTotal(newTransactionViewModel.currentTransaction ?: Transaction())}",
+            text = "¥${newTransactionViewModel.calculateTotal(newTransactionViewModel.transaction)}",
             style = MaterialTheme.typography.h2,
             color = MaterialTheme.colors.onBackground
         )

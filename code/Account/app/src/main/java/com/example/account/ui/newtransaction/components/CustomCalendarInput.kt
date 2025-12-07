@@ -10,6 +10,9 @@ import com.example.account.R
 import java.text.SimpleDateFormat
 import java.util.*
 
+import android.app.DatePickerDialog
+import androidx.compose.ui.platform.LocalContext
+
 @Composable
 fun CustomCalendarInput(
     label: String,
@@ -17,9 +20,10 @@ fun CustomCalendarInput(
     onValueChange: (String) -> Unit
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     val calendar = Calendar.getInstance()
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    
+
     // 如果有值，解析日期
     if (value.isNotEmpty()) {
         try {
@@ -61,12 +65,19 @@ fun CustomCalendarInput(
         )
     }
 
-    // 简单的日期选择器模拟
     if (showDatePicker) {
-        // 在实际应用中，这里应该使用Android的DatePickerDialog
-        // 由于Compose的限制，这里只是一个简化版本
-        val currentDate = dateFormat.format(calendar.time)
-        onValueChange(currentDate)
-        showDatePicker = false
+        val datePickerDialog = DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                calendar.set(year, month, dayOfMonth)
+                onValueChange(dateFormat.format(calendar.time))
+                showDatePicker = false
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        datePickerDialog.setOnDismissListener { showDatePicker = false }
+        datePickerDialog.show()
     }
 }

@@ -18,7 +18,7 @@ data class Transaction(
     @SerializedName("description") var description: String = "",
     @SerializedName("category") var category: String = "",
     @SerializedName("payeeName") var payeeName: String = "",
-    @SerializedName("transactionType") var transactionType: String = Constants.EXPENSE_TYPE,
+    @SerializedName("transactionType") var transactionType: String = "",
     @SerializedName("status") var status: String = Constants.ACTIVE,
     @SerializedName("items") var items: MutableList<TransactionItem> = mutableListOf(),
 ) : Serializable
