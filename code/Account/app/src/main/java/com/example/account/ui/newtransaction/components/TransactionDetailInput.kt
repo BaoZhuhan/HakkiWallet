@@ -20,10 +20,6 @@ fun TransactionDetailInput(
 ) {
     Column(modifier = Modifier.padding(top = 10.dp)) {
         SubHeading(title = "交易详情")
-        TransactionInfoInput(newTransactionViewModel)
-        SubHeading(title = "交易项目")
-        ItemListHeader()
-        TransactionItemInput(newTransactionViewModel, toggleBottomBar)
-        CustomTotal(newTransactionViewModel)
+        TransactionInfoInput(newTransactionViewModel, toggleBottomBar)
     }
 }
