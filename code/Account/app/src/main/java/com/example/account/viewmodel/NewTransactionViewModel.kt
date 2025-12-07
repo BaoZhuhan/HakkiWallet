@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -27,6 +28,9 @@ class NewTransactionViewModel @Inject constructor(
 
     // 当前正在编辑或创建的交易
     var transaction by mutableStateOf(Transaction())
+        private set
+
+    var validationError by mutableStateOf<String?>(null)
         private set
 
     // 是否为新交易
@@ -61,19 +65,67 @@ class NewTransactionViewModel @Inject constructor(
         }
     }
 
-    fun saveTransaction() {
-        if (isNew) {
-            createTransaction(transaction)
-        } else {
-            viewModelScope.launch(Dispatchers.IO + NonCancellable) {
+    fun saveTransaction(onSaveFinished: () -> Unit) {
+        viewModelScope.launch {
+            if (!validateTransaction()) {
+                return@launch
+            }
+
+            if (isNew) {
+                createTransaction(transaction)
+            } else {
                 originalTransactionId?.let { oldId ->
                     if (oldId != transaction.id) {
                         repository.updateTransactionId(oldId, transaction.id)
                     }
                 }
-                repository.updateTransaction(transaction)
+                updateTransaction(transaction)
+            }
+            onSaveFinished()
+        }
+    }
+
+    private suspend fun validateTransaction(): Boolean {
+        if (transaction.id.isBlank()) {
+            validationError = "交易编号不能为空"
+            return false
+        }
+        if (isNew || (originalTransactionId != null && originalTransactionId != transaction.id)) {
+            if (withContext(Dispatchers.IO) { repository.isTransactionIdExists(transaction.id) }) {
+                validationError = "交易编号已存在"
+                return false
             }
         }
+        if (calculateTotal(transaction) == 0f) {
+            validationError = "交易金额不能为0"
+            return false
+        }
+        if (transaction.transactionDate.isBlank()) {
+            validationError = "交易日期不能为空"
+            return false
+        }
+        if (transaction.description.isBlank()) {
+            validationError = "交易描述不能为空"
+            return false
+        }
+        if (transaction.transactionType.isBlank()) {
+            validationError = "交易类型不能为空"
+            return false
+        }
+        if (transaction.category.isBlank()) {
+            validationError = "交易分类不能为空"
+            return false
+        }
+        if (transaction.items.isEmpty()) {
+            validationError = "交易项目不能为空"
+            return false
+        }
+        if (transaction.items.any { it.name.isBlank() }) {
+            validationError = "项目名称不能为空"
+            return false
+        }
+        validationError = null
+        return true
     }
 
     fun addItemToTransaction(transaction: Transaction, item: TransactionItem) {
@@ -87,5 +139,9 @@ class NewTransactionViewModel @Inject constructor(
 
     fun calculateTotal(transaction: Transaction): Float {
         return transaction.items.sumOf { it.amount.toDouble() }.toFloat()
+    }
+
+    fun dismissValidationError() {
+        validationError = null
     }
 }

@@ -19,6 +19,9 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE id=:id")
     fun getTransactionById(id: String?): LiveData<Transaction>
 
+    @Query("SELECT EXISTS(SELECT 1 FROM transactions WHERE id = :id)")
+    suspend fun isTransactionIdExists(id: String): Boolean
+
     @Update
     suspend fun updateTransaction(transaction: Transaction)
 
