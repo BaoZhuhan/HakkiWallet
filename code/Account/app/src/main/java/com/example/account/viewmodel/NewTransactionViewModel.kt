@@ -54,7 +54,9 @@ class NewTransactionViewModel @Inject constructor(
     fun updateTransactionAmount(amount: Float) {
         currentTransaction?.let { transaction ->
             ensureTransactionHasItem()
-            transaction.items[0].amount = amount
+            if (transaction.items.isNotEmpty()) {
+                transaction.items[0].amount = amount
+            }
         }
     }
 
@@ -64,7 +66,9 @@ class NewTransactionViewModel @Inject constructor(
     fun getTransactionAmount(): Float {
         currentTransaction?.let { transaction ->
             ensureTransactionHasItem()
-            return transaction.items[0].amount
+            if (transaction.items.isNotEmpty()) {
+                return transaction.items[0].amount
+            }
         }
         return 0f
     }
