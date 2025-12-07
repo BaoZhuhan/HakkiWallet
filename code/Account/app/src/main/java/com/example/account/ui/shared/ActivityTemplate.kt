@@ -9,10 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.account.ui.theme.AccountTheme
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+
 @Composable
 fun ActivityTemplate(
     content: @Composable () -> Unit,
     bottomBar: @Composable () -> Unit = {},
+    floatingActionButton: @Composable () -> Unit = {},
     showGoBack: Boolean = false,
     activity: Activity? = null
 ) {
@@ -24,8 +28,11 @@ fun ActivityTemplate(
             bottomBar = {
                 bottomBar()
             },
-            content = {
-                content()
+            floatingActionButton = floatingActionButton,
+            content = { padding ->
+                Box(modifier = Modifier.padding(padding)) {
+                    content()
+                }
             },
             modifier = Modifier
                 .fillMaxSize()

@@ -31,12 +31,7 @@ fun BottomBar(
             Spacer(modifier = Modifier.width(10.dp))
             SaveButton(
                 onClick = {
-                    // 根据交易ID是否为空来判断是创建还是更新交易
-                    if (newTransactionViewModel.currentTransaction?.id.isNullOrEmpty()) {
-                        newTransactionViewModel.createTransaction(newTransactionViewModel.currentTransaction!!)
-                    } else {
-                        newTransactionViewModel.updateTransaction(newTransactionViewModel.currentTransaction!!)
-                    }
+                    newTransactionViewModel.saveTransaction()
                     activity.finish()
                 }
             )

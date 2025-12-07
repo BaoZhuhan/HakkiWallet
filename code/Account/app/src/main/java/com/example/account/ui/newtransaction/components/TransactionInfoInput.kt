@@ -14,21 +14,20 @@ import com.example.account.viewmodel.NewTransactionViewModel
 @ExperimentalMaterialApi
 @Composable
 fun TransactionInfoInput(newTransactionViewModel: NewTransactionViewModel) {
-    // 确保currentTransaction不为null
-    val transaction = newTransactionViewModel.currentTransaction ?: Transaction()
-    
+    val transaction = newTransactionViewModel.transaction
+
     Column(modifier = Modifier.padding(bottom = 10.dp)) {
         // 交易日期
         CustomCalendarInput(
             label = "交易日期",
             value = transaction.transactionDate,
-            onValueChange = { transaction.transactionDate = it }
+            onValueChange = { newTransactionViewModel.onTransactionChange(transaction.copy(transactionDate = it)) }
         )
         // 交易描述
         CustomTextInput(
             label = "交易描述",
             value = transaction.description,
-            onValueChange = { transaction.description = it },
+            onValueChange = { newTransactionViewModel.onTransactionChange(transaction.copy(description = it)) },
             placeholder = "输入交易描述"
         )
         // 交易类型（收入/支出）
@@ -36,14 +35,14 @@ fun TransactionInfoInput(newTransactionViewModel: NewTransactionViewModel) {
             label = "交易类型",
             options = listOf("收入", "支出"),
             selectedOption = transaction.transactionType,
-            onOptionSelected = { transaction.transactionType = it }
+            onOptionSelected = { newTransactionViewModel.onTransactionChange(transaction.copy(transactionType = it)) }
         )
         // 交易分类
         CustomDropDownInput(
             label = "交易分类",
             options = getCategoryOptions(transaction.transactionType),
             selectedOption = transaction.category,
-            onOptionSelected = { transaction.category = it }
+            onOptionSelected = { newTransactionViewModel.onTransactionChange(transaction.copy(category = it)) }
         )
     }
 }

@@ -42,9 +42,9 @@ fun BottomBar(
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
-            EditButton(transaction, activity)
+            EditButton(transaction, activity, Modifier.weight(1f))
             Spacer(modifier = Modifier.width(8.dp))
-            DeleteButton(transaction, transactionDetailViewModel, activity)
+            DeleteButton(transaction, transactionDetailViewModel, activity, Modifier.weight(1f))
         }
     }
 }
@@ -53,7 +53,7 @@ fun BottomBar(
     ExperimentalComposeUiApi::class
 )
 @Composable
-fun EditButton(transaction: Transaction, activity: Activity) {
+fun EditButton(transaction: Transaction, activity: Activity, modifier: Modifier = Modifier) {
     Button(
         onClick = {
             activity.finish()
@@ -63,9 +63,7 @@ fun EditButton(transaction: Transaction, activity: Activity) {
             intent.putExtra("transaction", transaction)
             ContextCompat.startActivity(activity, intent, null)
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primary
         )
@@ -79,7 +77,8 @@ fun EditButton(transaction: Transaction, activity: Activity) {
 fun DeleteButton(
     transaction: Transaction,
     transactionDetailViewModel: TransactionDetailViewModel,
-    activity: Activity
+    activity: Activity,
+    modifier: Modifier = Modifier
 ) {
     val openDialog = rememberSaveable { mutableStateOf(false) }
     
@@ -87,9 +86,7 @@ fun DeleteButton(
         onClick = {
             openDialog.value = true
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.error
         )

@@ -37,4 +37,10 @@ class TransactionDetailViewModel @Inject constructor(
             repository.archiveTransaction(transaction)
         }
     }
+
+    fun updateTransaction(transaction: Transaction) {
+        viewModelScope.launch(Dispatchers.IO + NonCancellable) {
+            repository.updateTransaction(transaction)
+        }
+    }
 }

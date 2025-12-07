@@ -1,6 +1,9 @@
 package com.example.account.viewmodel
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.account.model.Transaction
@@ -23,13 +26,22 @@ class NewTransactionViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     // 当前正在编辑或创建的交易
-    var currentTransaction: Transaction? = null
+    var transaction by mutableStateOf(Transaction())
+        private set
+
+    // 是否为新交易
+    private var isNew by mutableStateOf(true)
 
     /**
      * 设置交易数据，如果为null则创建新交易
      */
     fun setTransactionData(transaction: Transaction?) {
-        currentTransaction = transaction ?: Transaction()
+        isNew = transaction == null
+        this.transaction = transaction ?: Transaction()
+    }
+
+    fun onTransactionChange(newTransaction: Transaction) {
+        transaction = newTransaction
     }
 
     fun createTransaction(transaction: Transaction) {
@@ -41,6 +53,14 @@ class NewTransactionViewModel @Inject constructor(
     fun updateTransaction(transaction: Transaction) {
         viewModelScope.launch(Dispatchers.IO + NonCancellable) {
             repository.updateTransaction(transaction)
+        }
+    }
+
+    fun saveTransaction() {
+        if (isNew) {
+            createTransaction(transaction)
+        } else {
+            updateTransaction(transaction)
         }
     }
 

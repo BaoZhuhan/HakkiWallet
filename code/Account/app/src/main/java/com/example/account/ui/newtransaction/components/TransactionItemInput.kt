@@ -19,9 +19,8 @@ fun TransactionItemInput(
     newTransactionViewModel: NewTransactionViewModel,
     toggleBottomBar: (Boolean) -> Unit
 ) {
-    // 确保currentTransaction不为null
-    val transaction = newTransactionViewModel.currentTransaction ?: Transaction()
-    
+    val transaction = newTransactionViewModel.transaction
+
     Column(modifier = Modifier) {
         // 显示现有的项目
         transaction.items.forEachIndexed { index, item ->
@@ -34,38 +33,41 @@ fun TransactionItemInput(
                 CustomTextInput(
                     label = "",
                     value = item.name,
-                    onValueChange = { item.name = it },
+                    onValueChange = { newName ->
+                        val updatedItems = transaction.items.toMutableList()
+                        updatedItems[index] = item.copy(name = newName)
+                        newTransactionViewModel.onTransactionChange(transaction.copy(items = updatedItems))
+                    },
                     placeholder = "项目名称",
                     modifier = Modifier.weight(3f)
                 )
                 CustomPriceInput(
                     label = "",
                     value = item.amount.toString(),
-                    onValueChange = { 
-                        try {
-                            item.amount = it.toFloatOrNull() ?: 0f
-                        } catch (e: Exception) {
-                            item.amount = 0f
-                        }
+                    onValueChange = { newAmount ->
+                        val updatedItems = transaction.items.toMutableList()
+                        updatedItems[index] = item.copy(amount = newAmount.toFloatOrNull() ?: 0f)
+                        newTransactionViewModel.onTransactionChange(transaction.copy(items = updatedItems))
                     },
                     modifier = Modifier.weight(2f)
                 )
                 DeleteButton(
                     onClick = {
-                        transaction.items.removeAt(index)
+                        val updatedItems = transaction.items.toMutableList()
+                        updatedItems.removeAt(index)
+                        newTransactionViewModel.onTransactionChange(transaction.copy(items = updatedItems))
                     },
                     modifier = Modifier.weight(1f)
                 )
             }
         }
-        
+
         // 添加新项目按钮
         AddNewItemButton(
             onClick = {
-                // 添加新的交易项目
-                if (transaction.id.isNotEmpty()) {
-                    transaction.items.add(TransactionItem(parentTransactionId = transaction.id))
-                }
+                val updatedItems = transaction.items.toMutableList()
+                updatedItems.add(TransactionItem(parentTransactionId = transaction.id))
+                newTransactionViewModel.onTransactionChange(transaction.copy(items = updatedItems))
             },
             toggleBottomBar = toggleBottomBar
         )
