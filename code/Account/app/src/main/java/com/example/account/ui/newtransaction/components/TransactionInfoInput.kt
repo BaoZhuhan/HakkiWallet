@@ -8,6 +8,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.account.model.Transaction
+import com.example.account.utils.Constants
 import com.example.account.viewmodel.NewTransactionViewModel
 
 @ExperimentalComposeUiApi
@@ -43,6 +44,16 @@ fun TransactionInfoInput(newTransactionViewModel: NewTransactionViewModel) {
             options = getCategoryOptions(transaction.transactionType),
             selectedOption = transaction.category,
             onOptionSelected = { newTransactionViewModel.onTransactionChange(transaction.copy(category = it)) }
+        )
+        // 交易状态
+        CustomDropDownInput(
+            label = "交易状态",
+            options = listOf("活跃", "已归档"),
+            selectedOption = if (transaction.status == Constants.ACTIVE) "活跃" else "已归档",
+            onOptionSelected = {
+                val newStatus = if (it == "活跃") Constants.ACTIVE else Constants.ARCHIVED
+                newTransactionViewModel.onTransactionChange(transaction.copy(status = newStatus))
+            }
         )
     }
 }
