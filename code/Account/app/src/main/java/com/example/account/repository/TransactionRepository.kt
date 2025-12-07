@@ -33,6 +33,10 @@ class TransactionRepository @Inject constructor(
         transactionDao.updateTransaction(transaction)
     }
 
+    suspend fun updateTransactionId(oldId: String, newId: String) {
+        transactionDao.updateTransactionId(oldId, newId)
+    }
+
     suspend fun deleteTransaction(transaction: Transaction) {
         transactionDao.deleteTransaction(transaction)
     }
