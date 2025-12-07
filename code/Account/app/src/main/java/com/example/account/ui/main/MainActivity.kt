@@ -45,7 +45,9 @@ class MainActivity : ComponentActivity() {
                     }) {
                         Icon(Icons.Filled.Add, contentDescription = "Add Bill")
                     }
-                }
+                },
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = { themeViewModel.toggleTheme() }
             )
         }
     }

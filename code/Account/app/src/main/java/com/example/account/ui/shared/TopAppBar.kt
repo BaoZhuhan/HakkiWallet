@@ -1,13 +1,12 @@
 package com.example.account.ui.shared
 
 import android.app.Activity
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,9 +16,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.account.R
+import androidx.compose.foundation.isSystemInDarkTheme
 
 @Composable
-fun TopAppBar(showGoBack: Boolean, activity: Activity?) {
+fun TopAppBar(
+    showGoBack: Boolean,
+    activity: Activity?,
+    isDarkTheme: Boolean,
+    onToggleTheme: (() -> Unit)? = null
+) {
     Column {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -51,7 +56,24 @@ fun TopAppBar(showGoBack: Boolean, activity: Activity?) {
                         .align(Alignment.Center)
                 )
             }
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Theme toggle button (shown when a toggle handler is provided)
+                if (onToggleTheme != null) {
+                    IconButton(onClick = { onToggleTheme.invoke() }) {
+                        Icon(
+                            painter = if (isDarkTheme) painterResource(R.drawable.ic_icon_moon) else painterResource(R.drawable.ic_icon_sun),
+                            contentDescription = "切换主题",
+                            tint = MaterialTheme.colors.onSurface
+                        )
+                    }
+                    Divider(
+                        color = MaterialTheme.colors.onSurface,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(0.2.dp)
+                    )
+                }
+
                 if (showGoBack && activity != null) {
                     GoBack(activity)
                 }
