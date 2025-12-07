@@ -12,9 +12,9 @@ import androidx.compose.ui.unit.dp
 fun SubHeading(title: String) {
     Text(
         text = title,
-        style = MaterialTheme.typography.h2,
+        style = MaterialTheme.typography.h1,
         color = MaterialTheme.colors.onBackground,
         textAlign = TextAlign.Start,
-        modifier = Modifier.padding(top = 20.dp, bottom = 10.dp)
+        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
     )
 }
