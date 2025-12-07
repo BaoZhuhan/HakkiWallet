@@ -30,6 +30,43 @@ class NewTransactionViewModel @Inject constructor(
      */
     fun setTransactionData(transaction: Transaction?) {
         currentTransaction = transaction ?: Transaction()
+        ensureTransactionHasItem()
+    }
+
+    /**
+     * 确保交易至少有一个项目用于存储金额
+     */
+    private fun ensureTransactionHasItem() {
+        currentTransaction?.let { transaction ->
+            if (transaction.items.isEmpty()) {
+                transaction.items.add(TransactionItem(
+                    parentTransactionId = transaction.id,
+                    name = "交易金额",
+                    amount = 0f
+                ))
+            }
+        }
+    }
+
+    /**
+     * 更新交易金额
+     */
+    fun updateTransactionAmount(amount: Float) {
+        currentTransaction?.let { transaction ->
+            ensureTransactionHasItem()
+            transaction.items[0].amount = amount
+        }
+    }
+
+    /**
+     * 获取交易金额
+     */
+    fun getTransactionAmount(): Float {
+        currentTransaction?.let { transaction ->
+            ensureTransactionHasItem()
+            return transaction.items[0].amount
+        }
+        return 0f
     }
 
     fun createTransaction(transaction: Transaction) {

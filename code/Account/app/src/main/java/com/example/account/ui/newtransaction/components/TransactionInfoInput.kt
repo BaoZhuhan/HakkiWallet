@@ -4,12 +4,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.account.model.Transaction
-import com.example.account.model.TransactionItem
 import com.example.account.viewmodel.NewTransactionViewModel
 
 @ExperimentalComposeUiApi
@@ -21,17 +19,6 @@ fun TransactionInfoInput(
 ) {
     // 确保currentTransaction不为null
     val transaction = newTransactionViewModel.currentTransaction ?: Transaction()
-    
-    // 确保至少有一个TransactionItem用于存储金额
-    LaunchedEffect(Unit) {
-        if (transaction.items.isEmpty()) {
-            transaction.items.add(TransactionItem(
-                parentTransactionId = transaction.id,
-                name = "交易金额",
-                amount = 0f
-            ))
-        }
-    }
     
     Column(modifier = Modifier.padding(bottom = 10.dp)) {
         // 交易日期
@@ -57,25 +44,13 @@ fun TransactionInfoInput(
         // 交易金额
         CustomPriceInput(
             label = "交易金额",
-            value = if (transaction.items.isNotEmpty()) {
-                val amount = transaction.items[0].amount
+            value = run {
+                val amount = newTransactionViewModel.getTransactionAmount()
                 if (amount == 0f) "" else amount.toString()
-            } else "",
+            },
             onValueChange = { newAmount ->
-                try {
-                    val amount = if (newAmount.isEmpty()) 0f else (newAmount.toFloatOrNull() ?: 0f)
-                    if (transaction.items.isEmpty()) {
-                        transaction.items.add(TransactionItem(
-                            parentTransactionId = transaction.id,
-                            name = "交易金额",
-                            amount = amount
-                        ))
-                    } else {
-                        transaction.items[0].amount = amount
-                    }
-                } catch (e: Exception) {
-                    // 保持原值
-                }
+                val amount = if (newAmount.isEmpty()) 0f else (newAmount.toFloatOrNull() ?: 0f)
+                newTransactionViewModel.updateTransactionAmount(amount)
             },
             modifier = Modifier
         )

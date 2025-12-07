@@ -13,7 +13,7 @@ import com.example.account.R
 @Composable
 fun Heading() {
     Text(
-        text = stringResource(id = R.string.new_transaction_title),
+        text = stringResource(id = R.string.new_transaction),
         style = MaterialTheme.typography.h1,
         color = MaterialTheme.colors.onBackground,
         textAlign = TextAlign.Start,
