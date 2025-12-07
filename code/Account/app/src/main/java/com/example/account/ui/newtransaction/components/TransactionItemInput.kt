@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.account.model.Transaction
 import com.example.account.model.TransactionItem
 import com.example.account.viewmodel.NewTransactionViewModel
 
@@ -21,7 +20,7 @@ fun TransactionItemInput(
 ) {
     val transaction = newTransactionViewModel.transaction
 
-    Column(modifier = Modifier) {
+    Column {
         // 显示现有的项目
         transaction.items.forEachIndexed { index, item ->
             Row(
@@ -68,8 +67,7 @@ fun TransactionItemInput(
                 val updatedItems = transaction.items.toMutableList()
                 updatedItems.add(TransactionItem(parentTransactionId = transaction.id))
                 newTransactionViewModel.onTransactionChange(transaction.copy(items = updatedItems))
-            },
-            toggleBottomBar = toggleBottomBar
+            }
         )
     }
 }
