@@ -16,7 +16,10 @@ import com.example.account.ui.newtransaction.NewTransactionActivity
 import com.example.account.ui.shared.ActivityTemplate
 import com.example.account.ui.main.components.ActivityContent
 import com.example.account.viewmodel.MainViewModel
+import com.example.account.viewmodel.ThemeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -25,11 +28,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
+    private val themeViewModel: ThemeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val isDarkTheme by themeViewModel.isDarkTheme.collectAsState()
             ActivityTemplate(
                 content = {
                     ActivityContent(this, mainViewModel)

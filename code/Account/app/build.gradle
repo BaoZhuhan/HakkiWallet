@@ -85,6 +85,9 @@ dependencies {
     // Room 编译器必须和 Room 库版本一致
     kapt "androidx.room:room-compiler:$room_version"
 
+    // Hilt for Compose Navigation
+    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+
     // 其他库
     implementation 'androidx.datastore:datastore-preferences:1.0.0' // 保持
     implementation 'com.google.code.gson:gson:2.10.1' // 升级 Gson 版本到 2.10.1
@@ -97,6 +100,7 @@ dependencies {
     // Accompanist 库
     implementation "com.google.accompanist:accompanist-insets:$accompanist_version"
     implementation "com.google.accompanist:accompanist-insets-ui:$accompanist_version"
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
     implementation "io.github.vanpra.compose-material-dialogs:datetime:0.6.3" // 保持
 
     testImplementation 'junit:junit:4.13.2'

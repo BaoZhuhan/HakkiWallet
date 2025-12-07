@@ -52,30 +52,10 @@ fun TopAppBar(showGoBack: Boolean, activity: Activity?) {
                 )
             }
             Row {
-                Icon(
-                    painter = painterResource(R.drawable.ic_icon_sun), "切换主题",
-                    tint = MaterialTheme.colors.onSurface,
-                    modifier = Modifier
-                        .padding(start = 20.dp, end = 20.dp)
-                        .align(Alignment.CenterVertically)
-                )
-                Divider(
-                    color = MaterialTheme.colors.onSurface,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(0.2.dp)
-                )
-                Image(
-                    painter = painterResource(R.drawable.image_avatar), "个人头像",
-                    modifier = Modifier
-                        .padding(start = 20.dp, end = 20.dp)
-                        .clip(shape = CircleShape)
-                        .align(Alignment.CenterVertically)
-                )
+                if (showGoBack && activity != null) {
+                    GoBack(activity)
+                }
             }
-        }
-        if (showGoBack && activity != null) {
-            GoBack(activity)
         }
     }
 }
