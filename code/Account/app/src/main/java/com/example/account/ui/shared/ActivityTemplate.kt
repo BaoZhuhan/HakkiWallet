@@ -18,12 +18,14 @@ fun ActivityTemplate(
     bottomBar: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     showGoBack: Boolean = false,
-    activity: Activity? = null
+    activity: Activity? = null,
+    isDarkTheme: Boolean = androidx.compose.foundation.isSystemInDarkTheme(),
+    onToggleTheme: (() -> Unit)? = null
 ) {
     AccountTheme {
         Scaffold(
             topBar = {
-                TopAppBar(showGoBack, activity)
+                TopAppBar(showGoBack, activity, isDarkTheme, onToggleTheme)
             },
             bottomBar = {
                 bottomBar()
