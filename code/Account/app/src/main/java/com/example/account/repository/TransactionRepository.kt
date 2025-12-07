@@ -25,6 +25,10 @@ class TransactionRepository @Inject constructor(
         return transactionDao.getTransactionById(id)
     }
 
+    suspend fun isTransactionIdExists(id: String): Boolean {
+        return transactionDao.isTransactionIdExists(id)
+    }
+
     suspend fun createTransaction(transaction: Transaction) {
         transactionDao.addTransaction(transaction)
     }

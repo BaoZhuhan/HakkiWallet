@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val isDarkTheme by themeViewModel.isDarkTheme.collectAsState()
+            val isDarkTheme by themeViewModel.isDarkTheme.collectAsState(initial = false)
             ActivityTemplate(
                 content = {
                     ActivityContent(this, mainViewModel)

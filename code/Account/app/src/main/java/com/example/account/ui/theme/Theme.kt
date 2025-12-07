@@ -1,6 +1,5 @@
 package com.example.account.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
@@ -9,7 +8,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.account.viewmodel.ThemeViewModel
-import androidx.compose.ui.graphics.Color
 
 private val DarkColorPalette = darkColors(
     primary = ColorPrimary,
@@ -45,7 +43,7 @@ private val LightColorPalette = lightColors(
 @Composable
 fun AccountTheme(content: @Composable () -> Unit) {
     val themeViewModel: ThemeViewModel = hiltViewModel()
-    val isDarkTheme by themeViewModel.isDarkTheme.collectAsState()
+    val isDarkTheme by themeViewModel.isDarkTheme.collectAsState(initial = false)
     val colors = if (isDarkTheme) {
         DarkColorPalette
     } else {
