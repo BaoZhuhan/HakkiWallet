@@ -14,9 +14,9 @@ import com.example.account.R
 fun Heading() {
     Text(
         text = stringResource(id = R.string.new_transaction),
-        style = MaterialTheme.typography.h1,
+        style = MaterialTheme.typography.h2,
         color = MaterialTheme.colors.onBackground,
         textAlign = TextAlign.Start,
-        modifier = Modifier.padding(top = 50.dp, bottom = 20.dp)
+        modifier = Modifier.padding(top = 10.dp, bottom = 8.dp)
     )
 }

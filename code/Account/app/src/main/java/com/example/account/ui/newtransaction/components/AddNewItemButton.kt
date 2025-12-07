@@ -25,7 +25,7 @@ fun AddNewItemButton(
         color = MaterialTheme.colors.surface,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 20.dp)
+            .padding(top = 10.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -40,7 +40,7 @@ fun AddNewItemButton(
             Text(
                 text = "添加项目",
                 color = MaterialTheme.colors.primary,
-                style = MaterialTheme.typography.h3,
+                style = MaterialTheme.typography.subtitle1,
                 modifier = Modifier.padding(start = 10.dp)
             )
         }
