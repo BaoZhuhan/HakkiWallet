@@ -4,8 +4,6 @@ import com.example.account.model.TransactionItem
 import com.example.account.utils.*
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.text.SimpleDateFormat
-import java.util.*
 
 class HelperUnitTest {
 
