@@ -8,8 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import com.example.account.ui.main.components.ThemeToggleButton
-import com.example.account.viewmodel.ThemeViewModel
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi

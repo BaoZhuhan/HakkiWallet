@@ -1,6 +1,5 @@
 package com.example.account.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
@@ -9,7 +8,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.account.viewmodel.ThemeViewModel
-import androidx.compose.ui.graphics.Color
 
 private val DarkColorPalette = darkColors(
     primary = ColorPrimary,

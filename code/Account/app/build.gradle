@@ -6,20 +6,20 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    compileSdk = 34
 
-    namespace "com.example.account"
+    namespace = "com.example.account"
 
     defaultConfig {
         applicationId "com.example.account"
-        minSdk 21
-        targetSdk 34
+        minSdk = 21
+        targetSdk = 34
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
-            useSupportLibrary true
+            useSupportLibrary = true
         }
     }
 
@@ -37,10 +37,10 @@ android {
         jvmTarget = '17'
     }
     buildFeatures {
-        compose true
+        compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.5.4'
+        kotlinCompilerExtensionVersion = '1.5.4'
     }
     packagingOptions {
         resources {
