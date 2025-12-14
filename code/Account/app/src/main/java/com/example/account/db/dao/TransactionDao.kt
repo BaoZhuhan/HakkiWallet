@@ -33,4 +33,16 @@ interface TransactionDao {
 
     @Query("SELECT * FROM transactions WHERE transactionType = :type")
     fun getTransactionsByType(type: String): LiveData<List<Transaction>>
+
+    // Sum amounts from transaction_items grouped by transaction category
+    @Query("SELECT t.category as category, SUM(i.amount) as total FROM transactions t JOIN transaction_items i ON t.id = i.parentTransactionId GROUP BY t.category")
+    fun getCategoryTotals(): LiveData<List<com.example.account.model.CategoryTotal>>
+
+    // New: return full list (suspending) for backfilling
+    @Query("SELECT * FROM transactions")
+    suspend fun getAllTransactionsList(): List<Transaction>
+
+    // New: count transaction_items rows
+    @Query("SELECT COUNT(*) FROM transaction_items")
+    suspend fun getTransactionItemsCount(): Int
 }
