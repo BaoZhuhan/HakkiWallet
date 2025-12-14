@@ -45,4 +45,8 @@ interface TransactionDao {
     // New: count transaction_items rows
     @Query("SELECT COUNT(*) FROM transaction_items")
     suspend fun getTransactionItemsCount(): Int
+
+    // New: get totals grouped by transactionType and category (for income/expense per category)
+    @Query("SELECT t.transactionType as type, t.category as category, SUM(i.amount) as total FROM transactions t JOIN transaction_items i ON t.id = i.parentTransactionId GROUP BY t.transactionType, t.category")
+    fun getCategoryTotalsByType(): LiveData<List<com.example.account.model.CategoryTotalByType>>
 }

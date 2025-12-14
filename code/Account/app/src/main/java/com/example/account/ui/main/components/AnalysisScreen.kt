@@ -3,13 +3,14 @@ package com.example.account.ui.main.components
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.livedata.observeAsState
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.util.Locale
 import kotlin.math.min
+import com.example.account.utils.Constants
 
 // Simple data model for analysis summary per category
 data class CategorySummary(
@@ -30,20 +32,24 @@ data class CategorySummary(
     val color: Color
 )
 
-// UI-only composable for Analysis screen content
+// UI-only composable for Analysis screen content (clean, no debug)
 @Composable
 fun AnalysisScreenContent(
     modifier: Modifier = Modifier,
-    data: List<CategorySummary> = sampleData()
+    data: List<CategorySummary> = sampleData(),
+    incomeBreakdown: List<CategorySummary> = emptyList(),
+    expenseBreakdown: List<CategorySummary> = emptyList()
 ) {
     val total = remember(data) { data.sumOf { it.amount.toDouble() }.toFloat() }
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        Text(text = "账单分析", style = MaterialTheme.typography.h6, fontWeight = FontWeight.Bold)
+        Text(text = "账单分析", style = MaterialTheme.typography.h6, fontWeight = FontWeight.Bold, color = MaterialTheme.colors.onBackground)
         Spacer(modifier = Modifier.height(12.dp))
 
         // Pie + legend row
@@ -57,7 +63,7 @@ fun AnalysisScreenContent(
             Column(modifier = Modifier
                 .padding(start = 12.dp)
                 .fillMaxHeight()) {
-                Text(text = "图例", fontWeight = FontWeight.Bold)
+                Text(text = "图例", fontWeight = FontWeight.Bold, color = MaterialTheme.colors.onBackground)
                 Spacer(modifier = Modifier.height(8.dp))
                 data.forEach { item ->
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
@@ -65,7 +71,7 @@ fun AnalysisScreenContent(
                             .size(12.dp)
                             .background(color = item.color))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = item.category)
+                        Text(text = item.category, color = MaterialTheme.colors.onBackground)
                     }
                 }
             }
@@ -73,31 +79,76 @@ fun AnalysisScreenContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "分类明细", fontWeight = FontWeight.Bold)
+        Text(text = "分类明细 (${data.size} 项)", fontWeight = FontWeight.Bold, color = MaterialTheme.colors.onBackground)
         Spacer(modifier = Modifier.height(8.dp))
 
         // Table of categories
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column {
+        Card(modifier = Modifier.fillMaxWidth(), backgroundColor = MaterialTheme.colors.surface, elevation = 6.dp) {
+            Column(modifier = Modifier.padding(8.dp)) {
                 // header
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = "分类", fontWeight = FontWeight.Bold)
-                    Text(text = "金额", fontWeight = FontWeight.Bold)
+                    Text(text = "分类", fontWeight = FontWeight.Bold, color = MaterialTheme.colors.onBackground)
+                    Text(text = "金额", fontWeight = FontWeight.Bold, color = MaterialTheme.colors.onBackground)
                 }
                 Divider()
 
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    items(data) { item ->
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    data.forEach { item ->
                         Row(modifier = Modifier
                             .fillMaxWidth()
+                            .background(MaterialTheme.colors.onSurface.copy(alpha = 0.04f))
                             .padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(text = item.category)
+                            Text(text = item.category, color = MaterialTheme.colors.onBackground, fontWeight = FontWeight.Medium)
                             val percent = if (total <= 0f) 0f else item.amount / total * 100f
-                            Text(text = "${formatAmount(item.amount)}  (${String.format(Locale.getDefault(), "%.1f", percent)}%)")
+                            Text(text = "${formatAmount(item.amount)}  (${String.format(Locale.getDefault(), "%.1f", percent)}%)", color = MaterialTheme.colors.onBackground)
                         }
+                        Spacer(modifier = Modifier.height(6.dp))
                     }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Income & Expense breakdown cards
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            BreakdownCard(title = "收入汇总", breakdown = incomeBreakdown, modifier = Modifier.weight(1f))
+            BreakdownCard(title = "支出汇总", breakdown = expenseBreakdown, modifier = Modifier.weight(1f))
+        }
+    }
+}
+
+@Composable
+private fun BreakdownCard(modifier: Modifier = Modifier, title: String, breakdown: List<CategorySummary>, topN: Int = 5) {
+    val total = breakdown.sumOf { it.amount.toDouble() }.toFloat()
+    // sort desc
+    val sorted = breakdown.sortedByDescending { it.amount }
+    val top = if (sorted.size <= topN) sorted else sorted.subList(0, topN)
+    val rest = if (sorted.size <= topN) 0f else sorted.subList(topN, sorted.size).sumOf { it.amount.toDouble() }.toFloat()
+
+    val displayList = mutableListOf<CategorySummary>()
+    displayList.addAll(top)
+    if (rest > 0f) displayList.add(CategorySummary("其他", rest, Color(0xFFBDBDBD)))
+
+    Card(modifier = modifier) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(text = title, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
+            if (displayList.isEmpty()) {
+                Text(text = "暂无数据")
+            } else {
+                displayList.forEach { entry ->
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colors.onSurface.copy(alpha = 0.04f))
+                        .padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(text = entry.category, color = MaterialTheme.colors.onBackground)
+                        val percent = if (total <= 0f) 0f else entry.amount / total * 100f
+                        Text(text = "${formatAmount(entry.amount)}  (${String.format(Locale.getDefault(), "%.1f", percent)}%)", color = MaterialTheme.colors.onBackground)
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
                 }
             }
         }
@@ -147,7 +198,13 @@ fun AnalysisScreen(
     modifier: Modifier = Modifier,
     viewModel: AnalysisViewModel = hiltViewModel()
 ) {
+    // trigger backfill to ensure transaction_items exist before displaying summaries
+    LaunchedEffect(Unit) {
+        viewModel.ensureTransactionItemsPopulated()
+    }
+
     val totals by viewModel.categoryTotals.observeAsState(initial = emptyList())
+    val breakdown by viewModel.categoryTotalsByType.observeAsState(initial = emptyList())
 
     // Map CategoryTotal to CategorySummary with a simple color palette function
     fun paletteColor(index: Int): Color = when (index % 6) {
@@ -163,6 +220,25 @@ fun AnalysisScreen(
         CategorySummary(ct.category, ct.total, paletteColor(index))
     }
 
+    // Normalize type matching: accept constants and Chinese labels
+    fun isIncomeType(type: String?): Boolean {
+        if (type == null) return false
+        val t = type.lowercase().trim()
+        return t == Constants.INCOME_TYPE || t == "收入"
+    }
+
+    fun isExpenseType(type: String?): Boolean {
+        if (type == null) return false
+        val t = type.lowercase().trim()
+        return t == Constants.EXPENSE_TYPE || t == "支出"
+    }
+
+    val income = breakdown.filter { isIncomeType(it.type) }
+    val expense = breakdown.filter { isExpenseType(it.type) }
+
+    val incomeSummary = income.mapIndexed { index, it -> CategorySummary(it.category, it.total, paletteColor(index)) }
+    val expenseSummary = expense.mapIndexed { index, it -> CategorySummary(it.category, it.total, paletteColor(index + income.size)) }
+
     // Delegate to UI-only composable
-    AnalysisScreenContent(modifier = modifier, data = data)
+    AnalysisScreenContent(modifier = modifier, data = data, incomeBreakdown = incomeSummary, expenseBreakdown = expenseSummary)
 }
