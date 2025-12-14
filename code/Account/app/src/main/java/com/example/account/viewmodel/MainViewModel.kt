@@ -32,6 +32,8 @@ class MainViewModel @Inject constructor(
             if (!dataStore.initData.first()) {
                 loadInitialData(application.assets.open("data.json"))
             }
+            // Ensure transaction_items table is populated for analysis aggregation
+            repository.ensureTransactionItemsPopulated()
         }
     }
 

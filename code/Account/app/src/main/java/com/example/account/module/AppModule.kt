@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.account.db.TransactionDatabase
 import com.example.account.db.dao.TransactionDao
+import com.example.account.db.dao.TransactionItemDao
 import com.example.account.preference.UserPreferences
 import dagger.Module
 import dagger.Provides
@@ -35,5 +36,11 @@ object AppModule {
     @Singleton
     fun provideTransactionDao(database: TransactionDatabase): TransactionDao {
         return database.getTransactionDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionItemDao(database: TransactionDatabase): TransactionItemDao {
+        return database.getTransactionItemDao()
     }
 }
