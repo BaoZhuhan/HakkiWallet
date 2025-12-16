@@ -8,6 +8,7 @@ import com.example.account.model.Transaction
 import com.example.account.model.TransactionItem
 import com.example.account.preference.Preference
 import com.example.account.repository.TransactionRepository
+import com.example.account.utils.AiJsonParser
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -38,6 +39,25 @@ class MainViewModel @Inject constructor(
             }
             // Ensure transaction_items table is populated for analysis aggregation
             repository.ensureTransactionItemsPopulated()
+        }
+    }
+
+    /**
+     * 从 AI 返回的 JSON 字符串中解析交易并保存到数据库。
+     * 约定：AI 返回的 JSON 必须是对象或对象数组，字段应与 Transaction/TransactionItem 兼容。
+     * 这个方法会在 IO 线程中执行并忽略解析失败的条目。
+     */
+    fun ingestAiJson(jsonString: String) {
+        if (jsonString.isBlank()) return
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val parsed = AiJsonParser.parse(jsonString)
+                if (parsed.isNotEmpty()) {
+                    repository.addAllTransactions(parsed)
+                }
+            } catch (e: Exception) {
+                Log.d("ingestAiJson", "Failed to ingest AI JSON: $e")
+            }
         }
     }
 
