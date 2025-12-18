@@ -60,7 +60,6 @@ class MainActivity : ComponentActivity() {
             val showAiDialogState = remember { mutableStateOf(false) }
 
             val context = LocalContext.current
-
             // Bottom navigation bar composable
             val bottomBar: @Composable () -> Unit = {
                 BottomNavigation {
@@ -109,7 +108,8 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 isDarkTheme = isDarkTheme,
-                onToggleTheme = { themeViewModel.toggleTheme() }
+                onToggleTheme = { themeViewModel.toggleTheme() },
+                onOpenChat = { showAiDialogState.value = true }
             )
 
             if (showAiDialogState.value) {
