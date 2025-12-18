@@ -54,6 +54,7 @@ class MainViewModel @Inject constructor(
      */
     fun callAiModelAndIngestStoredKey(model: String, input: String, temperature: Double = 0.7, topP: Double = 0.9) {
         val apiKey = apiKeyStore.getApiKey() ?: return
+        Log.d("MainViewModel", "callAiModelAndIngestStoredKey: apiKey present? ${!apiKey.isNullOrBlank()} model=$model promptLen=${input.length}")
         callAiModelAndIngest(apiKey, model, input, temperature, topP)
     }
 
@@ -64,8 +65,10 @@ class MainViewModel @Inject constructor(
     fun fetchAiResponseStoredKey(model: String, input: String, temperature: Double = 0.7, topP: Double = 0.9) {
         val apiKey = apiKeyStore.getApiKey() ?: run {
             aiResponse.value = "API key not configured"
+            Log.d("MainViewModel", "fetchAiResponseStoredKey: API key not configured")
             return
         }
+        Log.d("MainViewModel", "fetchAiResponseStoredKey: apiKey present? ${!apiKey.isNullOrBlank()} model=$model promptLen=${input.length}")
         fetchAiResponse(apiKey, model, input, temperature, topP)
     }
 
@@ -77,9 +80,11 @@ class MainViewModel @Inject constructor(
         if (apiKey.isBlank() || input.isBlank()) return
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                Log.d("MainViewModel", "callAiModelAndIngest: starting network call model=$model promptLen=${input.length}")
                 val resp = AiHttpClient.requestResponse(apiKey = apiKey, model = model, input = input, temperature = temperature, topP = topP)
                 if (!resp.isNullOrBlank()) {
                     // resp may be plain text or JSON string; try ingesting as JSON
+                    Log.d("MainViewModel", "callAiModelAndIngest: got response len=${resp.length}")
                     ingestAiJson(resp)
                 }
             } catch (e: Exception) {
@@ -96,7 +101,9 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 aiLoading.value = true
+                Log.d("MainViewModel", "fetchAiResponse: starting network call model=$model promptLen=${input.length}")
                 val resp = AiHttpClient.requestResponse(apiKey = apiKey, model = model, input = input, temperature = temperature, topP = topP)
+                Log.d("MainViewModel", "fetchAiResponse: got response len=${resp?.length ?: 0}")
                 aiResponse.value = resp
             } catch (e: Exception) {
                 Log.d("fetchAiResponse", "AI call failed: $e")
@@ -109,6 +116,27 @@ class MainViewModel @Inject constructor(
 
     fun clearAiResponse() {
         aiResponse.value = null
+    }
+
+    /**
+     * Debug helper: return a masked API key string or null if not configured.
+     * Not intended for production display of secrets; this masks the middle of the token.
+     */
+    fun getMaskedApiKeyForDebug(): String? {
+        val k = apiKeyStore.getApiKey() ?: return null
+        return if (k.length <= 8) "configured" else k.take(4) + "..." + k.takeLast(4)
+    }
+
+    /** Debug: save API key at runtime (for testing only) */
+    fun setApiKeyForDebug(key: String) {
+        try {
+            apiKeyStore.setApiKey(key)
+            Log.d("MainViewModel", "setApiKeyForDebug: saved key (masked)=${getMaskedApiKeyForDebug()}")
+            aiResponse.value = "API key 已保存 (debug)"
+        } catch (e: Exception) {
+            Log.d("MainViewModel", "setApiKeyForDebug failed: $e")
+            aiResponse.value = "保存 API key 失败: ${e.message}"
+        }
     }
 
     /**

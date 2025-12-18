@@ -1,6 +1,8 @@
 package com.example.account.ui.main.components
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.ExperimentalMaterialApi
@@ -27,7 +29,11 @@ fun Buttons(modifier: Modifier, context: Context, onAiClick: () -> Unit) {
         )
         AddNewButton(modifier = Modifier.align(Alignment.CenterVertically), context)
         // Left-side AI chat icon — call onAiClick when pressed
-        IconButton(onClick = { onAiClick.invoke() }, modifier = Modifier.align(Alignment.CenterVertically)) {
+        IconButton(onClick = {
+            try { Toast.makeText(context, "AI 按钮被点击", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
+            Log.d("Buttons", "AI icon clicked - invoking onAiClick")
+            onAiClick.invoke()
+        }, modifier = Modifier.align(Alignment.CenterVertically)) {
             Icon(imageVector = Icons.Default.Chat, contentDescription = "AI")
         }
     }
