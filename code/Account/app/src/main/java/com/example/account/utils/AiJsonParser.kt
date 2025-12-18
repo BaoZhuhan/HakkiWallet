@@ -3,9 +3,7 @@ package com.example.account.utils
 import com.example.account.model.Transaction
 import com.example.account.model.TransactionItem
 import com.google.gson.Gson
-import com.google.gson.JsonArray
 import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 
 /**
  * 解析来自 AI 的 JSON 响应，并将其映射为应用内的 Transaction 列表。
@@ -41,7 +39,7 @@ object AiJsonParser {
         val id = when {
             obj.has("id") && !obj.get("id").isJsonNull -> obj.get("id").asString
             obj.has("_id") && !obj.get("_id").isJsonNull -> obj.get("_id").asString
-            else -> com.example.account.utils.getNewTransactionId()
+            else -> getNewTransactionId()
         }
 
         val createdAt = when {
@@ -54,7 +52,7 @@ object AiJsonParser {
 
         val category = if (obj.has("category") && !obj.get("category").isJsonNull) obj.get("category").asString else "其他"
 
-        val transactionType = if (obj.has("transactionType") && !obj.get("transactionType").isJsonNull) obj.get("transactionType").asString else com.example.account.utils.Constants.EXPENSE_TYPE
+        val transactionType = if (obj.has("transactionType") && !obj.get("transactionType").isJsonNull) obj.get("transactionType").asString else Constants.EXPENSE_TYPE
 
         val items = mutableListOf<TransactionItem>()
         if (obj.has("items") && obj.get("items").isJsonArray) {
@@ -93,9 +91,8 @@ object AiJsonParser {
             category = category,
             payeeName = "",
             transactionType = transactionType,
-            status = com.example.account.utils.Constants.ACTIVE,
+            status = Constants.ACTIVE,
             items = items
         )
     }
 }
-

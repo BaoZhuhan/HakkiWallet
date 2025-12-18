@@ -21,6 +21,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Allow injecting an API key at build time via -P AI_API_KEY or gradle.properties/local gradle property
+        def aiKey = project.hasProperty('AI_API_KEY') ? project.property('AI_API_KEY') : ""
+        buildConfigField "String", "AI_API_KEY", "\"${aiKey}\""
     }
 
     buildTypes {
@@ -38,6 +42,8 @@ android {
     }
     buildFeatures {
         compose = true
+        // Enable BuildConfig custom fields (required when using buildConfigField in defaultConfig)
+        buildConfig true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = '1.5.8'
@@ -131,4 +137,7 @@ dependencies {
 
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version" // 新增，Compose 1.2+ 推荐
+
+    // Security crypto for EncryptedSharedPreferences
+    implementation 'androidx.security:security-crypto:1.1.0-alpha03'
 }

@@ -6,6 +6,7 @@ import com.example.account.db.TransactionDatabase
 import com.example.account.db.dao.TransactionDao
 import com.example.account.db.dao.TransactionItemDao
 import com.example.account.preference.UserPreferences
+import com.example.account.preference.ApiKeyStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,6 +22,12 @@ object AppModule {
     @Singleton
     fun provideUserPreferences(@ApplicationContext context: Context): UserPreferences {
         return UserPreferences(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideApiKeyStore(@ApplicationContext context: Context): ApiKeyStore {
+        return ApiKeyStore(context)
     }
 
     @Provides

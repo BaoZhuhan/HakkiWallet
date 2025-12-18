@@ -29,6 +29,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.unit.dp
+import com.example.account.ui.main.components.AiDialog
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -47,6 +54,12 @@ class MainActivity : ComponentActivity() {
 
             // Navigation state: 0 = 主页, 1 = 分析
             val selectedIndexState = rememberSaveable { mutableStateOf(0) }
+
+            // AI Dialog visibility
+            // Use explicit MutableState to avoid delegation/operator resolution issues in some Compose/Kotlin setups
+            val showAiDialogState = remember { mutableStateOf(false) }
+
+            val context = LocalContext.current
 
             // Bottom navigation bar composable
             val bottomBar: @Composable () -> Unit = {
@@ -72,7 +85,8 @@ class MainActivity : ComponentActivity() {
                 content = {
                     // Switch content by selected index
                     if (selectedIndexState.value == 0) {
-                        ActivityContent(this, mainViewModel)
+                        // pass left-side AI click handler to ActivityContent
+                        ActivityContent(this, mainViewModel) { showAiDialogState.value = true }
                     } else {
                         AnalysisScreen()
                     }
@@ -81,16 +95,26 @@ class MainActivity : ComponentActivity() {
                 floatingActionButton = {
                     // Keep FAB but hide it on Analysis screen if desired
                     if (selectedIndexState.value == 0) {
-                        FloatingActionButton(onClick = {
-                            startActivity(Intent(this, NewTransactionActivity::class.java))
-                        }) {
-                            Icon(Icons.Filled.Add, contentDescription = "Add Bill")
+                        Row {
+                            FloatingActionButton(onClick = {
+                                context.startActivity(Intent(context, NewTransactionActivity::class.java))
+                            }) {
+                                Icon(Icons.Filled.Add, contentDescription = "Add Bill")
+                            }
+
+                            Spacer(modifier = androidx.compose.ui.Modifier.width(12.dp))
+
+                            // Chat FAB removed; left-side chat icon overlays this functionality
                         }
                     }
                 },
                 isDarkTheme = isDarkTheme,
                 onToggleTheme = { themeViewModel.toggleTheme() }
             )
+
+            if (showAiDialogState.value) {
+                AiDialog(mainViewModel = mainViewModel) { showAiDialogState.value = false }
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ import com.example.account.viewmodel.ThemeViewModel
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
-fun ActivityContent(context: Context, mainViewModel: MainViewModel) {
+fun ActivityContent(context: Context, mainViewModel: MainViewModel, onAiClick: () -> Unit) {
     val transactions by mainViewModel.transactions.observeAsState()
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -33,7 +33,8 @@ fun ActivityContent(context: Context, mainViewModel: MainViewModel) {
             TransactionHeader()
             Buttons(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                context = context
+                context = context,
+                onAiClick = onAiClick
             )
         }
         Column(

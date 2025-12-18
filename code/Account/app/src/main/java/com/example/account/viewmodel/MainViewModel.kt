@@ -7,13 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.account.model.Transaction
 import com.example.account.model.TransactionItem
 import com.example.account.preference.Preference
+import com.example.account.preference.ApiKeyStore
 import com.example.account.repository.TransactionRepository
 import com.example.account.utils.AiJsonParser
+import com.example.account.utils.AiHttpClient
 import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.reflect.TypeToken
+import androidx.compose.runtime.mutableStateOf
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -25,12 +24,19 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: TransactionRepository,
+    private val apiKeyStore: ApiKeyStore,
     application: Application,
 ) : AndroidViewModel(application) {
 
     private val dataStore = Preference(application)
 
     val transactions = repository.transactions
+
+    // AI 调用相关状态
+    var aiResponse = mutableStateOf<String?>(null)
+        private set
+    var aiLoading = mutableStateOf(false)
+        private set
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -40,6 +46,69 @@ class MainViewModel @Inject constructor(
             // Ensure transaction_items table is populated for analysis aggregation
             repository.ensureTransactionItemsPopulated()
         }
+    }
+
+    /**
+     * 调用 AI 接口并将返回的 JSON 直接写入数据库（会在 IO 线程中执行）。
+     * 使用已保存的 API Key（免输入）。
+     */
+    fun callAiModelAndIngestStoredKey(model: String, input: String, temperature: Double = 0.7, topP: Double = 0.9) {
+        val apiKey = apiKeyStore.getApiKey() ?: return
+        callAiModelAndIngest(apiKey, model, input, temperature, topP)
+    }
+
+    /**
+     * 仅获取 AI 返回的字符串并保存在 aiResponse 状态中，供 UI 显示（不会自动保存到 DB）。
+     * 使用已保存的 API Key（免输入）。
+     */
+    fun fetchAiResponseStoredKey(model: String, input: String, temperature: Double = 0.7, topP: Double = 0.9) {
+        val apiKey = apiKeyStore.getApiKey() ?: run {
+            aiResponse.value = "API key not configured"
+            return
+        }
+        fetchAiResponse(apiKey, model, input, temperature, topP)
+    }
+
+    /**
+     * 调用 AI 接口并将返回的 JSON 直接写入数据库（会在 IO 线程中执行）。
+     * apiKey: Bearer token（请从安全存储传入）
+     */
+    fun callAiModelAndIngest(apiKey: String, model: String, input: String, temperature: Double = 0.7, topP: Double = 0.9) {
+        if (apiKey.isBlank() || input.isBlank()) return
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val resp = AiHttpClient.requestResponse(apiKey = apiKey, model = model, input = input, temperature = temperature, topP = topP)
+                if (!resp.isNullOrBlank()) {
+                    // resp may be plain text or JSON string; try ingesting as JSON
+                    ingestAiJson(resp)
+                }
+            } catch (e: Exception) {
+                Log.d("callAiModelAndIngest", "AI call failed: $e")
+            }
+        }
+    }
+
+    /**
+     * 仅获取 AI 返回的字符串并保存在 aiResponse 状态中，供 UI 显示（不会自动保存到 DB）。
+     */
+    fun fetchAiResponse(apiKey: String, model: String, input: String, temperature: Double = 0.7, topP: Double = 0.9) {
+        if (apiKey.isBlank() || input.isBlank()) return
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                aiLoading.value = true
+                val resp = AiHttpClient.requestResponse(apiKey = apiKey, model = model, input = input, temperature = temperature, topP = topP)
+                aiResponse.value = resp
+            } catch (e: Exception) {
+                Log.d("fetchAiResponse", "AI call failed: $e")
+                aiResponse.value = "AI call failed: ${e.message}"
+            } finally {
+                aiLoading.value = false
+            }
+        }
+    }
+
+    fun clearAiResponse() {
+        aiResponse.value = null
     }
 
     /**
@@ -65,7 +134,7 @@ class MainViewModel @Inject constructor(
         try {
             val jsonString = file.bufferedReader().use { it.readText() }
             val gson = Gson()
-            val jsonArray = gson.fromJson(jsonString, JsonArray::class.java)
+            val jsonArray = gson.fromJson(jsonString, com.google.gson.JsonArray::class.java)
 
             val mapped = mutableListOf<Transaction>()
 
