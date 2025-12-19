@@ -73,7 +73,8 @@ class ApiKeyStore(private val context: Context) {
     }
 
     fun setApiKey(key: String) {
-        sharedPreferences.edit { putString(KEY_API, key) }
+        // Use synchronous commit so callers can rely on immediate availability
+        sharedPreferences.edit(commit = true) { putString(KEY_API, key) }
     }
 
     fun getApiKey(): String? {
@@ -81,6 +82,6 @@ class ApiKeyStore(private val context: Context) {
     }
 
     fun clearApiKey() {
-        sharedPreferences.edit { remove(KEY_API) }
+        sharedPreferences.edit(commit = true) { remove(KEY_API) }
     }
 }

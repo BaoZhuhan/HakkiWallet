@@ -57,7 +57,7 @@ class MainViewModel @Inject constructor(
         try {
             val ts = System.currentTimeMillis()
             val line = "[${ts}] $msg\n"
-            aiDebugLog.value = (aiDebugLog.value ?: "") + line
+            aiDebugLog.value = aiDebugLog.value + line
             Log.d("MainViewModel", "DEBUGLOG: $msg")
         } catch (_: Throwable) {
             // ignore
@@ -103,19 +103,45 @@ class MainViewModel @Inject constructor(
     fun callAiModelAndIngest(apiKey: String, model: String, input: String, temperature: Double = 0.7, topP: Double = 0.9) {
         if (apiKey.isBlank() || input.isBlank()) return
         viewModelScope.launch(Dispatchers.IO) {
+            aiLoading.value = true
             try {
                 appendAiDebug("callAiModelAndIngest: starting network call model=$model promptLen=${input.length}")
                 Log.d("MainViewModel", "callAiModelAndIngest: starting network call model=$model promptLen=${input.length}")
-                val resp = AiHttpClient.requestResponse(apiKey = apiKey, model = model, input = input, temperature = temperature, topP = topP)
+                val prompt = buildAiJsonPrompt(input)
+                appendAiDebug("callAiModelAndIngest: built JSON prompt len=${prompt.length}")
+                val resp = AiHttpClient.requestResponse(apiKey = apiKey, model = model, input = prompt, temperature = temperature, topP = topP)
                 appendAiDebug("callAiModelAndIngest: got response len=${resp?.length ?: 0} preview=${resp?.take(200) ?: "null"}")
                 if (!resp.isNullOrBlank()) {
-                    // resp may be plain text or JSON string; try ingesting as JSON
-                    Log.d("MainViewModel", "callAiModelAndIngest: got response len=${resp.length}")
-                    ingestAiJson(resp)
+                    try {
+                        // Try to parse and ingest synchronously here so caller (UI) can observe aiLoading/aiResponse
+                        val parsed = AiJsonParser.parse(resp)
+                        if (parsed.isNotEmpty()) {
+                            repository.addAllTransactions(parsed)
+                            aiResponse.value = "已保存 ${parsed.size} 条交易"
+                            appendAiDebug("callAiModelAndIngest: ingested ${parsed.size} transactions")
+                            Log.d("MainViewModel", "callAiModelAndIngest: ingested ${parsed.size} transactions")
+                        } else {
+                            aiResponse.value = "AI 未返回可解析的交易"
+                            appendAiDebug("callAiModelAndIngest: parsed 0 transactions")
+                            Log.w("MainViewModel", "callAiModelAndIngest: parsed 0 transactions")
+                        }
+                    } catch (e: Exception) {
+                        appendAiDebug("callAiModelAndIngest: ingest failed: ${e.message}")
+                        aiResponse.value = "解析或保存失败: ${e.message}"
+                        Log.d("callAiModelAndIngest", "Ingest failed: $e")
+                    }
+                } else {
+                    aiResponse.value = "AI 返回为空或无内容（请检查 API key / 网络或查看日志）"
+                    appendAiDebug("callAiModelAndIngest: AI returned empty response for model=$model inputLen=${input.length}")
+                    Log.w("MainViewModel", "AI returned empty response for model=$model inputLen=${input.length}")
                 }
             } catch (e: Exception) {
                 appendAiDebug("callAiModelAndIngest: AI call failed: ${e.message}")
                 Log.d("callAiModelAndIngest", "AI call failed: $e")
+                aiResponse.value = "AI 调用或保存失败: ${e.message}"
+            } finally {
+                aiLoading.value = false
+                appendAiDebug("callAiModelAndIngest: finished")
             }
         }
     }
@@ -128,9 +154,13 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 aiLoading.value = true
+                // immediate UI feedback so users know a request was sent
+                aiResponse.value = "请求已发送，等待返回..."
                 appendAiDebug("fetchAiResponse: starting network call model=$model promptLen=${input.length}")
                 Log.d("MainViewModel", "fetchAiResponse: starting network call model=$model promptLen=${input.length}")
-                val resp = AiHttpClient.requestResponse(apiKey = apiKey, model = model, input = input, temperature = temperature, topP = topP)
+                val prompt = buildAiJsonPrompt(input)
+                appendAiDebug("fetchAiResponse: built JSON prompt len=${prompt.length}")
+                val resp = AiHttpClient.requestResponse(apiKey = apiKey, model = model, input = prompt, temperature = temperature, topP = topP)
                 appendAiDebug("fetchAiResponse: got response len=${resp?.length ?: 0} preview=${resp?.take(300) ?: "null"}")
                 Log.d("MainViewModel", "fetchAiResponse: got response len=${resp?.length ?: 0}")
                 if (resp.isNullOrBlank()) {
@@ -272,5 +302,41 @@ class MainViewModel @Inject constructor(
         } catch (ioException: IOException) {
             Log.d("loadInitialData", "Could not load initial data; $ioException")
         }
+    }
+
+    /**
+     * 构造用于 AI 的提示词，要求 AI 仅返回与本地数据库模型兼容的 JSON（严格的 JSON，不含任何额外文字）。
+     * 输出约定：返回一个 JSON 数组，每个元素为交易对象，字段兼容 `Transaction` 和 `TransactionItem` 模型兼容。
+     */
+    private fun buildAiJsonPrompt(input: String): String {
+        return """
+        你是一个 JSON 生成器。请根据下面的原始文本提取交易记录并返回严格的 JSON 数组，数组中每一项为一个交易对象，字段应与本地应用的 Transaction/TransactionItem 模型兼容。
+
+        JSON 格式要求（必须遵守）：
+        - 输出必须是纯 JSON（不允许任何说明性文字或多余字符）。
+        - 输出应为一个数组（即使只有一条交易，也要放在数组中）。
+        - 每个交易对象可以包含如下字段：
+          - id (string, 可选)
+          - createdAt (string, 建议使用 ISO 日期或可解析的日期文本)
+          - description (string)
+          - category (string)
+          - transactionType (string, 例如 "EXPENSE" 或 "INCOME")
+          - items (array): 每个 item 至少包含 name (string) 和 amount (number)。也可包含 price, quantity 等字段。
+
+        示例输出：
+        [
+          {
+            "id": "tx123",
+            "createdAt": "2025-01-02",
+            "description": "餐厅消费",
+            "category": "餐饮",
+            "transactionType": "EXPENSE",
+            "items": [ { "name": "午餐", "amount": 45.6 } ]
+          }
+        ]
+
+        原始文本：
+        $input
+        """.trimIndent()
     }
 }

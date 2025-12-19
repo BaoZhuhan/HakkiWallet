@@ -3,8 +3,6 @@ package com.example.account.ui.main.components
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -12,6 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.example.account.viewmodel.MainViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun AiDialog(
@@ -19,92 +18,71 @@ fun AiDialog(
     onDismissRequest: () -> Unit
 ) {
     val ctx = LocalContext.current
-    var model by remember { mutableStateOf("glm-4.5-air") }
+    val model = "glm-4.5-air"
     var prompt by remember { mutableStateOf("") }
 
-    val aiResponse by remember { mainViewModel.aiResponse }
-    val aiLoading by remember { mainViewModel.aiLoading }
-    // Debug: show whether an API key is configured and allow setting one at runtime
-    val maskedKey = remember { mutableStateOf(mainViewModel.getMaskedApiKeyForDebug() ?: "未配置") }
-    var debugApiKey by remember { mutableStateOf("97f11f3a795f46088ead3e004e14ad7f.HjCQgvuOFO3Uvn4g") }
+    // Directly observe ViewModel MutableState so Compose recomposes on changes
+    val aiResponse by mainViewModel.aiResponse
+    val aiLoading by mainViewModel.aiLoading
 
-    // Debug log from ViewModel (in-memory)
-    val aiDebugLog by remember { mainViewModel.aiDebugLog }
+    // Local flag to indicate a request was initiated from this dialog instance
+    var requested by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    // Watch for completion and show a transient Toast (success/failure) when request finishes
+    LaunchedEffect(requested, aiLoading, aiResponse) {
+        if (!requested) return@LaunchedEffect
+        // Wait until loading finishes
+        if (aiLoading) return@LaunchedEffect
+
+        // Decide success vs failure based on response text heuristics
+        val resp = aiResponse ?: ""
+        val lower = resp.lowercase()
+        val failureKeywords = listOf("未配置", "not configured", "failed", "为空", "失败")
+        val isFailure = failureKeywords.any { it in lower }
+
+        val message = if (isFailure || resp.isBlank()) {
+            // show a short failure message (include brief reason when available)
+            if (resp.isNotBlank()) "AI 操作失败: ${resp.take(100)}" else "AI 操作失败"
+        } else {
+            "AI 操作成功"
+        }
+
+        // Show transient Toast
+        try {
+            Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show()
+        } catch (_: Throwable) {}
+
+        // clear viewModel response and reset flag, then dismiss dialog
+        try { mainViewModel.clearAiResponse() } catch (_: Throwable) {}
+        requested = false
+        onDismissRequest()
+    }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text(text = "AI 对话") },
+        title = { Text(text = "AI 记账") },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Model")
-                OutlinedTextField(
-                    value = model,
-                    onValueChange = { model = it },
-                    label = { Text("Model") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = prompt,
                     onValueChange = { prompt = it },
-                    label = { Text("Prompt / Input") },
-                    modifier = Modifier.fillMaxWidth().height(120.dp)
+                    label = { Text("输入") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
-                // Debug UI: show masked key and an input to set key at runtime
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = "API Key: ${maskedKey.value}")
-                }
-                OutlinedTextField(
-                    value = debugApiKey,
-                    onValueChange = { debugApiKey = it },
-                    label = { Text("Debug API Key (paste here for test)") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                    TextButton(onClick = {
-                        if (debugApiKey.isNotBlank()) {
-                            mainViewModel.setApiKeyForDebug(debugApiKey)
-                            maskedKey.value = mainViewModel.getMaskedApiKeyForDebug() ?: "已保存"
-                            try { Toast.makeText(ctx, "API key 已保存 (debug)", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
-                        } else {
-                            try { Toast.makeText(ctx, "请输入 API key", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
-                        }
-                    }) { Text("保存 API Key (debug)") }
-                }
-                Spacer(modifier = Modifier.height(12.dp))
 
                 if (aiLoading) {
                     Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                         CircularProgressIndicator()
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                aiResponse?.let { resp ->
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = "AI 返回:")
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Surface(modifier = Modifier.fillMaxWidth(), elevation = 1.dp) {
-                        Text(text = resp, modifier = Modifier.padding(8.dp))
-                    }
-                }
-
-                // Debug log area
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = "Debug Log:")
-                Spacer(modifier = Modifier.height(6.dp))
-                Surface(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp), elevation = 1.dp) {
-                    Column(modifier = Modifier
-                        .padding(8.dp)
-                        .verticalScroll(rememberScrollState())) {
-                        Text(text = if (aiDebugLog.isBlank()) "(无调试日志)" else aiDebugLog)
-                    }
-                }
+                // Note: we intentionally no longer show the full AI response here; result is reported via transient Toast.
             }
         },
         buttons = {
@@ -117,59 +95,29 @@ fun AiDialog(
                 TextButton(onClick = {
                     mainViewModel.clearAiResponse()
                     onDismissRequest()
-                }) { Text("关闭") }
+                }) { Text("取消") }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                TextButton(onClick = {
-                    // 仅调用并显示返回文本，使用已保存的 api key
-                    try { Toast.makeText(ctx, "调用AI：仅显示返回", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
-                    Log.d("AiDialog", "fetchAiResponseStoredKey called with model=$model, promptLen=${prompt.length}")
-                    mainViewModel.fetchAiResponseStoredKey(model = model, input = prompt)
-                }) { Text("调用并显示") }
-
-                Spacer(modifier = Modifier.width(8.dp))
+                val callEnabled = prompt.isNotBlank() && !aiLoading
 
                 TextButton(onClick = {
-                    // 直接调用并保存到 DB，使用已保存的 api key
-                    try { Toast.makeText(ctx, "调用AI：调用并保存到DB", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
+                    // Initiate request using stored API key and ingest result into DB
                     Log.d("AiDialog", "callAiModelAndIngestStoredKey called with model=$model, promptLen=${prompt.length}")
-                    mainViewModel.callAiModelAndIngestStoredKey(model = model, input = prompt)
-                    onDismissRequest()
-                }) { Text("直接调用并保存") }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                TextButton(onClick = {
-                    // 如果已经有返回且是 JSON，可以尝试解析保存
-                    aiResponse?.let {
-                        try { Toast.makeText(ctx, "尝试解析并保存AI返回", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
-                        Log.d("AiDialog", "ingestAiJson called, respLen=${it.length}")
-                        mainViewModel.ingestAiJson(it)
+                    requested = true
+                    scope.launch {
+                        try {
+                            mainViewModel.callAiModelAndIngestStoredKey(model = model, input = prompt)
+                        } catch (e: Exception) {
+                            // Immediate failure: show Toast and reset
+                            try { Toast.makeText(ctx, "请求发送失败: ${e.message}", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
+                            requested = false
+                        }
                     }
-                    onDismissRequest()
-                }) { Text("保存到数据库") }
+                }, enabled = callEnabled) { Text("确认") }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                // New debug controls
-                TextButton(onClick = {
-                    mainViewModel.clearAiDebugLog()
-                    try { Toast.makeText(ctx, "已清除调试日志", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
-                }) { Text("清除日志") }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                TextButton(onClick = {
-                    // Force call using debugApiKey even if stored key absent
-                    if (debugApiKey.isNotBlank()) {
-                        try { Toast.makeText(ctx, "强制调用使用 Debug API key", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
-                        Log.d("AiDialog", "force call using debug key, model=$model promptLen=${prompt.length}")
-                        mainViewModel.callAiModelAndIngest(debugApiKey, model, prompt)
-                    } else {
-                        try { Toast.makeText(ctx, "请先在 Debug API Key 中粘贴一个 key", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
-                    }
-                }) { Text("强制调用 (Debug key)") }
             }
         },
         properties = DialogProperties(dismissOnClickOutside = true)
