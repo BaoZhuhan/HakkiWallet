@@ -20,6 +20,8 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import java.io.InputStream
 import javax.inject.Inject
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -309,7 +311,24 @@ class MainViewModel @Inject constructor(
      * 输出约定：返回一个 JSON 数组，每个元素为交易对象，字段兼容 `Transaction` 和 `TransactionItem` 模型兼容。
      */
     private fun buildAiJsonPrompt(input: String): String {
+        // 获取系统当前日期（优先使用 java.time），格式为 YYYY-MM-DD；若不可用则使用系统时间毫秒转换
+        val currentDate = try {
+            LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+        } catch (e: Throwable) {
+            // Fallback: use millis -> simple date string
+            try {
+                val sdf = java.text.SimpleDateFormat("yyyy-MM-dd")
+                sdf.format(java.util.Date(System.currentTimeMillis()))
+            } catch (_: Throwable) {
+                ""
+            }
+        }
+
+        val dateLine = if (currentDate.isNotBlank()) "系统当前日期: $currentDate" else ""
+
         return """
+        请注意下面一行：$dateLine
+
         你是一个 JSON 生成器。请根据下面的原始文本提取交易记录并返回严格的 JSON 数组，数组中每一项为一个交易对象，字段应与本地应用的 Transaction/TransactionItem 模型兼容。
 
         JSON 格式要求（必须遵守）：
@@ -322,6 +341,8 @@ class MainViewModel @Inject constructor(
           - category (string)
           - transactionType (string, 例如 "EXPENSE" 或 "INCOME")
           - items (array): 每个 item 至少包含 name (string) 和 amount (number)。也可包含 price, quantity 等字段。
+
+        注意：请以上面提供的“系统当前日期”作为参考来推断或填充交易日期字段（createdAt）。若原始文本中包含明确的日期信息，应使用文本中识别到的日期；若无法识别，请使用系统当前日期作为交易日期。
 
         示例输出：
         [
