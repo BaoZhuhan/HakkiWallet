@@ -3,6 +3,8 @@ package com.example.account.ui.main.components
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -17,14 +19,17 @@ fun AiDialog(
     onDismissRequest: () -> Unit
 ) {
     val ctx = LocalContext.current
-    var model by remember { mutableStateOf("nex-agi/deepseek-v3.1-nex-n1:free") }
+    var model by remember { mutableStateOf("glm-4.5-air") }
     var prompt by remember { mutableStateOf("") }
 
     val aiResponse by remember { mainViewModel.aiResponse }
     val aiLoading by remember { mainViewModel.aiLoading }
     // Debug: show whether an API key is configured and allow setting one at runtime
     val maskedKey = remember { mutableStateOf(mainViewModel.getMaskedApiKeyForDebug() ?: "未配置") }
-    var debugApiKey by remember { mutableStateOf("") }
+    var debugApiKey by remember { mutableStateOf("97f11f3a795f46088ead3e004e14ad7f.HjCQgvuOFO3Uvn4g") }
+
+    // Debug log from ViewModel (in-memory)
+    val aiDebugLog by remember { mainViewModel.aiDebugLog }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -86,6 +91,20 @@ fun AiDialog(
                         Text(text = resp, modifier = Modifier.padding(8.dp))
                     }
                 }
+
+                // Debug log area
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(text = "Debug Log:")
+                Spacer(modifier = Modifier.height(6.dp))
+                Surface(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp), elevation = 1.dp) {
+                    Column(modifier = Modifier
+                        .padding(8.dp)
+                        .verticalScroll(rememberScrollState())) {
+                        Text(text = if (aiDebugLog.isBlank()) "(无调试日志)" else aiDebugLog)
+                    }
+                }
             }
         },
         buttons = {
@@ -130,6 +149,27 @@ fun AiDialog(
                     }
                     onDismissRequest()
                 }) { Text("保存到数据库") }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // New debug controls
+                TextButton(onClick = {
+                    mainViewModel.clearAiDebugLog()
+                    try { Toast.makeText(ctx, "已清除调试日志", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
+                }) { Text("清除日志") }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                TextButton(onClick = {
+                    // Force call using debugApiKey even if stored key absent
+                    if (debugApiKey.isNotBlank()) {
+                        try { Toast.makeText(ctx, "强制调用使用 Debug API key", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
+                        Log.d("AiDialog", "force call using debug key, model=$model promptLen=${prompt.length}")
+                        mainViewModel.callAiModelAndIngest(debugApiKey, model, prompt)
+                    } else {
+                        try { Toast.makeText(ctx, "请先在 Debug API Key 中粘贴一个 key", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
+                    }
+                }) { Text("强制调用 (Debug key)") }
             }
         },
         properties = DialogProperties(dismissOnClickOutside = true)
