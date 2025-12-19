@@ -16,6 +16,10 @@ import java.net.URL
  */
 object AiHttpClient {
 
+    // Default timeouts (ms). Increased from 15s to 60s to avoid premature timeouts on slower AI backends.
+    private const val DEFAULT_CONNECT_TIMEOUT_MS = 60_000
+    private const val DEFAULT_READ_TIMEOUT_MS = 60_000
+
     /**
      * 向模型服务发送请求并返回解析到的字符串回复。
      * 使用的请求体遵循类似于 BigModel chat/completions 的格式：
@@ -37,7 +41,10 @@ object AiHttpClient {
         temperature: Double = 1.0,
         topP: Double = 0.95,
         doSample: Boolean = false,
-        stream: Boolean = false
+        stream: Boolean = false,
+        // optional per-call overrides (milliseconds). If null or non-positive, defaults are used.
+        connectTimeoutMs: Int? = null,
+        readTimeoutMs: Int? = null
     ): String? = withContext(Dispatchers.IO) {
         if (apiKey.isBlank()) throw IllegalArgumentException("API key must not be blank")
 
@@ -52,8 +59,9 @@ object AiHttpClient {
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Accept", "application/json")
                 setRequestProperty("Authorization", "Bearer $apiKey")
-                connectTimeout = 15000
-                readTimeout = 15000
+                // use provided overrides when valid, otherwise fall back to defaults
+                connectTimeout = connectTimeoutMs?.takeIf { it > 0 } ?: DEFAULT_CONNECT_TIMEOUT_MS
+                readTimeout = readTimeoutMs?.takeIf { it > 0 } ?: DEFAULT_READ_TIMEOUT_MS
             }
 
             // Build JSON body following the provided BigModel example
