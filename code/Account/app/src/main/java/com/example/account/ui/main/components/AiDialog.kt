@@ -18,7 +18,7 @@ fun AiDialog(
     onDismissRequest: () -> Unit
 ) {
     val ctx = LocalContext.current
-    val model = "glm-4.5-air"
+    val model = "glm-4-flashx"
     var prompt by remember { mutableStateOf("") }
 
     // Directly observe ViewModel MutableState so Compose recomposes on changes
