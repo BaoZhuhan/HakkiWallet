@@ -45,7 +45,8 @@ fun ActivityContent(context: Context, mainViewModel: MainViewModel, onAiClick: (
             Body(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 transactions = transactions,
-                context = context
+                context = context,
+                mainViewModel = mainViewModel
             )
         }
     }

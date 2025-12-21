@@ -26,13 +26,25 @@ fun ActivityTemplate(
     activity: Activity? = null,
     isDarkTheme: Boolean = androidx.compose.foundation.isSystemInDarkTheme(),
     onToggleTheme: (() -> Unit)? = null,
+    // Selection support
+    selectedCount: Int = 0,
+    onDeleteSelected: (() -> Unit)? = null,
+    onCancelSelection: (() -> Unit)? = null,
     // Optional callback for opening the chat/AI dialog. Parent can supply and control visibility.
     onOpenChat: (() -> Unit)? = null
 ) {
     AccountTheme {
         Scaffold(
             topBar = {
-                TopAppBar(showGoBack, activity, isDarkTheme, onToggleTheme)
+                TopAppBar(
+                    showGoBack,
+                    activity,
+                    isDarkTheme,
+                    onToggleTheme,
+                    selectedCount = selectedCount,
+                    onDeleteSelected = onDeleteSelected,
+                    onCancelSelection = onCancelSelection
+                )
             },
             bottomBar = {
                 bottomBar()

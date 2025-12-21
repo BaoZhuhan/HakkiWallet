@@ -39,7 +39,7 @@ object AiJsonParser {
         val id = when {
             obj.has("id") && !obj.get("id").isJsonNull -> obj.get("id").asString
             obj.has("_id") && !obj.get("_id").isJsonNull -> obj.get("_id").asString
-            else -> getNewTransactionId()
+            else -> "" // changed: leave id empty so caller (ViewModel) can request a guaranteed-unique id from local service
         }
 
         val createdAt = when {
