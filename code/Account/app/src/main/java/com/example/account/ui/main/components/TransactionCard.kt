@@ -1,10 +1,14 @@
 package com.example.account.ui.main.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
@@ -15,7 +19,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import android.content.Intent
 import com.example.account.model.Transaction
 import com.example.account.model.TransactionItem
@@ -26,19 +29,43 @@ import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
-fun TransactionCard(transaction: Transaction, modifier: Modifier = Modifier) {
+fun TransactionCard(
+    transaction: Transaction,
+    modifier: Modifier = Modifier,
+    isSelected: Boolean = false,
+    onLongPressToggle: (() -> Unit)? = null,
+    onClickToggle: (() -> Unit)? = null
+) {
     val context = LocalContext.current
-    
-    Card(
-        modifier = modifier
+
+    val backgroundModifier = if (isSelected) {
+        modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        elevation = 2.dp,
-        onClick = {
-            val intent = Intent(context, TransactionDetailActivity::class.java)
-            intent.putExtra("id", transaction.id)
-            context.startActivity(intent)
-        }
+            .padding(8.dp)
+            .background(MaterialTheme.colors.primary.copy(alpha = 0.12f))
+    } else {
+        modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    }
+
+    Card(
+        modifier = backgroundModifier
+            .combinedClickable(
+                onClick = {
+                    if (onClickToggle != null) {
+                        onClickToggle()
+                    } else {
+                        val intent = Intent(context, TransactionDetailActivity::class.java)
+                        intent.putExtra("id", transaction.id)
+                        context.startActivity(intent)
+                    }
+                },
+                onLongClick = {
+                    onLongPressToggle?.invoke()
+                }
+            ),
+        elevation = 2.dp
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -59,7 +86,7 @@ fun TransactionCard(transaction: Transaction, modifier: Modifier = Modifier) {
                     }
                 )
             }
-            
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -78,6 +105,17 @@ fun TransactionCard(transaction: Transaction, modifier: Modifier = Modifier) {
                 )
             }
         }
+
+        // Bottom color bar to indicate selection state
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .background(
+                    if (isSelected) MaterialTheme.colors.primary
+                    else MaterialTheme.colors.onSurface.copy(alpha = 0.06f)
+                )
+        )
     }
 }
 

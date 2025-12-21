@@ -8,6 +8,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,13 +18,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.account.R
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 
 @Composable
 fun TopAppBar(
     showGoBack: Boolean,
     activity: Activity?,
     isDarkTheme: Boolean,
-    onToggleTheme: (() -> Unit)? = null
+    onToggleTheme: (() -> Unit)? = null,
+    // Selection support
+    selectedCount: Int = 0,
+    onDeleteSelected: (() -> Unit)? = null,
+    onCancelSelection: (() -> Unit)? = null
 ) {
     Column {
         Row(
@@ -56,26 +64,39 @@ fun TopAppBar(
                         .align(Alignment.Center)
                 )
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // Theme toggle button (shown when a toggle handler is provided)
-                if (onToggleTheme != null) {
-                    IconButton(onClick = { onToggleTheme.invoke() }) {
-                        Icon(
-                            painter = if (isDarkTheme) painterResource(R.drawable.ic_icon_moon) else painterResource(R.drawable.ic_icon_sun),
-                            contentDescription = "切换主题",
-                            tint = MaterialTheme.colors.onSurface
+            // If selection active, show selection toolbar actions
+            if (selectedCount > 0) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "${selectedCount} 已选", modifier = Modifier.padding(end = 8.dp))
+                    IconButton(onClick = { onDeleteSelected?.invoke() }) {
+                        Icon(Icons.Default.Delete, contentDescription = "删除")
+                    }
+                    IconButton(onClick = { onCancelSelection?.invoke() }) {
+                        Icon(Icons.Default.Close, contentDescription = "取消")
+                    }
+                }
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Theme toggle button (shown when a toggle handler is provided)
+                    if (onToggleTheme != null) {
+                        IconButton(onClick = { onToggleTheme.invoke() }) {
+                            Icon(
+                                painter = if (isDarkTheme) painterResource(R.drawable.ic_icon_moon) else painterResource(R.drawable.ic_icon_sun),
+                                contentDescription = "切换主题",
+                                tint = MaterialTheme.colors.onSurface
+                            )
+                        }
+                        Divider(
+                            color = MaterialTheme.colors.onSurface,
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(0.2.dp)
                         )
                     }
-                    Divider(
-                        color = MaterialTheme.colors.onSurface,
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(0.2.dp)
-                    )
-                }
 
-                if (showGoBack && activity != null) {
-                    GoBack(activity)
+                    if (showGoBack && activity != null) {
+                        GoBack(activity)
+                    }
                 }
             }
         }

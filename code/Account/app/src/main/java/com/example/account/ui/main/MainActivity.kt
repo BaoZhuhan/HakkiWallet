@@ -36,6 +36,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.unit.dp
 import com.example.account.ui.main.components.AiDialog
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -109,11 +112,41 @@ class MainActivity : ComponentActivity() {
                 },
                 isDarkTheme = isDarkTheme,
                 onToggleTheme = { themeViewModel.toggleTheme() },
-                onOpenChat = { showAiDialogState.value = true }
+                onOpenChat = { showAiDialogState.value = true },
+                selectedCount = mainViewModel.selectedIds.value.size,
+                // Instead of deleting immediately, ask ViewModel to request confirmation
+                onDeleteSelected = { mainViewModel.requestDeleteConfirmation() },
+                onCancelSelection = { mainViewModel.clearSelection() }
             )
 
+            // Show AI dialog when requested
             if (showAiDialogState.value) {
                 AiDialog(mainViewModel = mainViewModel) { showAiDialogState.value = false }
+            }
+
+            // Show delete confirmation dialog when ViewModel requests it
+            if (mainViewModel.showDeleteConfirmation.value) {
+                AlertDialog(
+                    onDismissRequest = { mainViewModel.dismissDeleteConfirmation() },
+                    title = { Text(text = "确认删除") },
+                    text = { Text(text = "确定要删除选中的 ${mainViewModel.selectedIds.value.size} 条交易吗？此操作无法撤销。") },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                mainViewModel.deleteSelected()
+                                mainViewModel.dismissDeleteConfirmation()
+                            },
+                            colors = ButtonDefaults.buttonColors()
+                        ) {
+                            Text(text = "删除")
+                        }
+                    },
+                    dismissButton = {
+                        Button(onClick = { mainViewModel.dismissDeleteConfirmation() }) {
+                            Text(text = "取消")
+                        }
+                    }
+                )
             }
         }
     }

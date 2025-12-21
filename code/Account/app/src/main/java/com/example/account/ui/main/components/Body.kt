@@ -9,17 +9,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.account.model.Transaction
 import com.example.account.utils.Constants
+import com.example.account.viewmodel.MainViewModel
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
-fun Body(modifier: Modifier, transactions: List<Transaction>?, context: Context) {
+fun Body(modifier: Modifier, transactions: List<Transaction>?, context: Context, mainViewModel: MainViewModel) {
     if (transactions?.isNotEmpty() == true) {
         LazyColumn(
             modifier = Modifier
@@ -28,10 +31,25 @@ fun Body(modifier: Modifier, transactions: List<Transaction>?, context: Context)
             verticalArrangement = Arrangement.spacedBy(15.dp),
         ) {
             items(transactions) { transaction ->
-                TransactionCard(transaction, modifier = Modifier.animateItemPlacement())
+                val selectedIds = mainViewModel.selectedIds.value
+                val isSelected = selectedIds.contains(transaction.id)
+
+                // Only supply onClickToggle when selection mode is active; otherwise allow click to open detail
+                val onClickToggleParam: (() -> Unit)? = if (mainViewModel.selectedIds.value.isNotEmpty()) {
+                    { mainViewModel.toggleSelection(transaction.id) }
+                } else null
+
+                TransactionCard(
+                    transaction,
+                    modifier = Modifier.animateItemPlacement(),
+                    isSelected = isSelected,
+                    onLongPressToggle = { mainViewModel.toggleSelection(transaction.id) },
+                    onClickToggle = onClickToggleParam
+                )
             }
         }
     } else {
+        // if no transactions show placeholder
         NoTransactionBody()
     }
 }

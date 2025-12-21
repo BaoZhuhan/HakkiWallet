@@ -22,6 +22,7 @@ import java.io.InputStream
 import javax.inject.Inject
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.NonCancellable
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -33,6 +34,14 @@ class MainViewModel @Inject constructor(
     private val dataStore = Preference(application)
 
     val transactions = repository.transactions
+
+    // selection state for multi-select (stores selected transaction ids)
+    var selectedIds = mutableStateOf(setOf<String>())
+        private set
+
+    // Confirmation dialog state for multi-delete
+    var showDeleteConfirmation = mutableStateOf(false)
+        private set
 
     // AI 调用相关状态
     var aiResponse = mutableStateOf<String?>(null)
@@ -58,7 +67,7 @@ class MainViewModel @Inject constructor(
     fun appendAiDebug(msg: String) {
         try {
             val ts = System.currentTimeMillis()
-            val line = "[${ts}] $msg\n"
+            val line = "[$ts] $msg\n"
             aiDebugLog.value = aiDebugLog.value + line
             Log.d("MainViewModel", "DEBUGLOG: $msg")
         } catch (_: Throwable) {
@@ -68,6 +77,43 @@ class MainViewModel @Inject constructor(
 
     fun clearAiDebugLog() {
         aiDebugLog.value = ""
+    }
+
+    // Selection helpers
+    fun toggleSelection(id: String) {
+        val set = selectedIds.value.toMutableSet()
+        if (!set.remove(id)) set.add(id)
+        selectedIds.value = set
+    }
+
+    fun clearSelection() {
+        selectedIds.value = emptySet()
+    }
+
+    // Request/dismiss confirmation dialog for deleting selected items
+    fun requestDeleteConfirmation() {
+        if (selectedIds.value.isNotEmpty()) showDeleteConfirmation.value = true
+    }
+
+    fun dismissDeleteConfirmation() {
+        showDeleteConfirmation.value = false
+    }
+
+    fun deleteSelected() {
+        val toDelete = selectedIds.value.toList()
+        if (toDelete.isEmpty()) return
+        viewModelScope.launch(Dispatchers.IO + NonCancellable) {
+            for (id in toDelete) {
+                try {
+                    // delete by primary key - constructing minimal Transaction entity
+                    repository.deleteTransaction(Transaction(id = id))
+                } catch (e: Exception) {
+                    appendAiDebug("deleteSelected failed for $id: ${e.message}")
+                }
+            }
+            // clear selection on UI thread
+            viewModelScope.launch(Dispatchers.Main) { clearSelection() }
+        }
     }
 
     /**
@@ -112,16 +158,64 @@ class MainViewModel @Inject constructor(
                 val prompt = buildAiJsonPrompt(input)
                 appendAiDebug("callAiModelAndIngest: built JSON prompt len=${prompt.length}")
                 val resp = AiHttpClient.requestResponse(apiKey = apiKey, model = model, input = prompt, temperature = temperature, topP = topP)
-                appendAiDebug("callAiModelAndIngest: got response len=${resp?.length ?: 0} preview=${resp?.take(200) ?: "null"}")
+                appendAiDebug("callAiModelAndIngest: got response len=" + (resp?.length ?: 0) + " preview=" + (resp?.take(200) ?: "null"))
                 if (!resp.isNullOrBlank()) {
                     try {
                         // Try to parse and ingest synchronously here so caller (UI) can observe aiLoading/aiResponse
                         val parsed = AiJsonParser.parse(resp)
-                        if (parsed.isNotEmpty()) {
-                            repository.addAllTransactions(parsed)
-                            aiResponse.value = "已保存 ${parsed.size} 条交易"
-                            appendAiDebug("callAiModelAndIngest: ingested ${parsed.size} transactions")
-                            Log.d("MainViewModel", "callAiModelAndIngest: ingested ${parsed.size} transactions")
+
+                        // Ensure each parsed transaction has a unique id. If id missing/empty, request one from local ID service.
+                        val ensured = mutableListOf<Transaction>()
+                        for (p in parsed) {
+                            var tx = p
+                            if (tx.id.isBlank()) {
+                                // attempt to obtain a unique id from local service with retries
+                                var newId: String? = null
+                                var attempts = 0
+                                while (newId.isNullOrBlank() && attempts < 3) {
+                                    attempts++
+                                    newId = try {
+                                        requestNewIdFromLocalService()
+                                    } catch (e: Exception) {
+                                        appendAiDebug("requestNewIdFromLocalService failed: ${e.message}")
+                                        null
+                                    }
+
+                                    // If still blank or service failed, fallback to local random generator and ensure uniqueness
+                                    if (newId.isNullOrBlank()) {
+                                        newId = com.example.account.utils.getNewTransactionId()
+                                    }
+
+                                    // verify uniqueness against DB
+                                    val exists = try { repository.isTransactionIdExists(newId) } catch (_: Exception) { false }
+                                    if (!exists) break else newId = ""
+                                }
+                                if (newId.isNullOrBlank()) {
+                                    // as a last resort, generate until unique (limited attempts)
+                                    var candidate: String
+                                    var guard = 0
+                                    do {
+                                        candidate = com.example.account.utils.getNewTransactionId()
+                                        guard++
+                                    } while (guard < 20 && try { repository.isTransactionIdExists(candidate) } catch (_: Exception) { false })
+                                    tx.id = candidate
+                                } else {
+                                    tx.id = newId
+                                }
+                            }
+
+                            // ensure all items reference correct parent id
+                            for (it in tx.items) {
+                                it.parentTransactionId = tx.id
+                            }
+                            ensured.add(tx)
+                        }
+
+                        if (ensured.isNotEmpty()) {
+                            repository.addAllTransactions(ensured)
+                            aiResponse.value = "已保存 ${ensured.size} 条交易"
+                            appendAiDebug("callAiModelAndIngest: ingested ${ensured.size} transactions")
+                            Log.d("MainViewModel", "callAiModelAndIngest: ingested ${ensured.size} transactions")
                         } else {
                             aiResponse.value = "AI 未返回可解析的交易"
                             appendAiDebug("callAiModelAndIngest: parsed 0 transactions")
@@ -148,6 +242,34 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    // Request a new ID string from a local HTTP service running on device/emulator.
+    // The service is expected to return plain text id, e.g. "AB1234". If request fails, throw an exception.
+    private fun requestNewIdFromLocalService(): String? {
+        val hosts = listOf("127.0.0.1", "10.0.2.2", "10.0.3.2")
+        for (host in hosts) {
+            try {
+                val url = java.net.URL("http://$host:8080/generate-id")
+                val conn = url.openConnection() as java.net.HttpURLConnection
+                conn.requestMethod = "GET"
+                conn.connectTimeout = 2000
+                conn.readTimeout = 2000
+                conn.doInput = true
+                val code = conn.responseCode
+                if (code != 200) {
+                    appendAiDebug("requestNewIdFromLocalService: $host returned $code")
+                    continue
+                }
+                val stream = conn.inputStream
+                val txt = stream.bufferedReader().use { it.readText() }.trim()
+                stream.close()
+                if (txt.isNotBlank()) return txt
+            } catch (e: Exception) {
+                appendAiDebug("requestNewIdFromLocalService exception for host $host: ${e.message}")
+            }
+        }
+        return null
+    }
+
     /**
      * 仅获取 AI 返回的字符串并保存在 aiResponse 状态中，供 UI 显示（不会自动保存到 DB）。
      */
@@ -163,12 +285,12 @@ class MainViewModel @Inject constructor(
                 val prompt = buildAiJsonPrompt(input)
                 appendAiDebug("fetchAiResponse: built JSON prompt len=${prompt.length}")
                 val resp = AiHttpClient.requestResponse(apiKey = apiKey, model = model, input = prompt, temperature = temperature, topP = topP)
-                appendAiDebug("fetchAiResponse: got response len=${resp?.length ?: 0} preview=${resp?.take(300) ?: "null"}")
+                appendAiDebug("fetchAiResponse: got response len=" + (resp?.length ?: 0) + " preview=" + (resp?.take(300) ?: "null"))
                 Log.d("MainViewModel", "fetchAiResponse: got response len=${resp?.length ?: 0}")
                 if (resp.isNullOrBlank()) {
                     aiResponse.value = "AI 返回为空或无内容（请检查 API key / 网络或查看日志）"
                     appendAiDebug("fetchAiResponse: AI returned empty response for model=$model inputLen=${input.length}")
-                    Log.w("MainViewModel", "AI returned empty response for model=$model inputLen=${input.length}")
+                    Log.w("MainViewModel", "AI返回空响应 model=$model inputLen=${input.length}")
                 } else {
                     aiResponse.value = resp
                 }
@@ -308,7 +430,7 @@ class MainViewModel @Inject constructor(
 
     /**
      * 构造用于 AI 的提示词，要求 AI 仅返回与本地数据库模型兼容的 JSON（严格的 JSON，不含任何额外文字）。
-     * 输出约定：返回一个 JSON 数组，每个元素为交易对象，字段兼容 `Transaction` 和 `TransactionItem` 模型兼容。
+     * 输出约定：返回一个 JSON 数组，每个元素为一个交易对象，字段兼容 `Transaction` 和 `TransactionItem` 模型兼容。
      */
     private fun buildAiJsonPrompt(input: String): String {
         // 获取系统当前日期（优先使用 java.time），格式为 YYYY-MM-DD；若不可用则使用系统时间毫秒转换
@@ -335,7 +457,8 @@ class MainViewModel @Inject constructor(
         - 输出必须是纯 JSON（不允许任何说明性文字或多余字符）。
         - 输出应为一个数组（即使只有一条交易，也要放在数组中）。
         - 每个交易对象可以包含如下字段：
-          - id (string, 可选)
+          - id (string, 可选)  
+            - 如果原始文本中存在明显且可作为唯一标识的 ID，可返回该字段；否则不要生成或填写 id（应用会为缺失的 id 分配唯一 ID）。
           - createdAt (string, 建议使用 ISO 日期或可解析的日期文本)
           - description (string)
           - category (string)
