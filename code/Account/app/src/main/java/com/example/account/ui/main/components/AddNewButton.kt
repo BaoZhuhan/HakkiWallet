@@ -29,11 +29,13 @@ import com.example.account.ui.newtransaction.NewTransactionActivity
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
-fun AddNewButton(modifier: Modifier, context: Context) {
+fun AddNewButton(modifier: Modifier, context: Context, onPreNavigate: () -> Unit = {}) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(90.dp))
             .clickable {
+                // Call pre-navigation hook (e.g., clear selection) before starting activity
+                try { onPreNavigate.invoke() } catch (_: Throwable) {}
                 val intent = Intent(context, NewTransactionActivity::class.java)
                 context.startActivity(intent)
             }

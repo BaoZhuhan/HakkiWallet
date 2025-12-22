@@ -39,6 +39,12 @@ import com.example.account.ui.main.components.AiDialog
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.launch
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -58,6 +64,10 @@ class MainActivity : ComponentActivity() {
             // Navigation state: 0 = 主页, 1 = 分析
             val selectedIndexState = rememberSaveable { mutableStateOf(0) }
 
+            // Pager state for horizontal swiping between pages
+            val pagerState = rememberPagerState(initialPage = selectedIndexState.value, pageCount = { 2 })
+            val coroutineScope = rememberCoroutineScope()
+
             // AI Dialog visibility
             // Use explicit MutableState to avoid delegation/operator resolution issues in some Compose/Kotlin setups
             val showAiDialogState = remember { mutableStateOf(false) }
@@ -70,27 +80,49 @@ class MainActivity : ComponentActivity() {
                         icon = { Icon(Icons.Filled.Home, contentDescription = "主页") },
                         label = { Text("主页") },
                         selected = selectedIndexState.value == 0,
-                        onClick = { selectedIndexState.value = 0 }
+                        onClick = {
+                            // If currently in multi-select mode, clear selection before switching
+                            if (mainViewModel.selectedIds.value.isNotEmpty()) {
+                                mainViewModel.clearSelection()
+                            }
+                            // animate pager to page 0
+                            coroutineScope.launch { pagerState.animateScrollToPage(0) }
+                        }
                     )
 
                     BottomNavigationItem(
                         icon = { Icon(Icons.Filled.Assessment, contentDescription = "分析") },
                         label = { Text("分析") },
                         selected = selectedIndexState.value == 1,
-                        onClick = { selectedIndexState.value = 1 }
+                        onClick = {
+                            // If currently in multi-select mode, clear selection before switching
+                            if (mainViewModel.selectedIds.value.isNotEmpty()) {
+                                mainViewModel.clearSelection()
+                            }
+                            coroutineScope.launch { pagerState.animateScrollToPage(1) }
+                        }
                     )
                 }
             }
 
+            // Keep selectedIndexState in sync with pager's current page, and clear selection on page change
+            LaunchedEffect(pagerState) {
+                snapshotFlow { pagerState.currentPage }.collect { newPage: Int ->
+                    if (mainViewModel.selectedIds.value.isNotEmpty()) {
+                        mainViewModel.clearSelection()
+                    }
+                    selectedIndexState.value = newPage
+                }
+            }
 
             ActivityTemplate(
                 content = {
-                    // Switch content by selected index
-                    if (selectedIndexState.value == 0) {
-                        // pass left-side AI click handler to ActivityContent
-                        ActivityContent(this, mainViewModel) { showAiDialogState.value = true }
-                    } else {
-                        AnalysisScreen()
+                    HorizontalPager(state = pagerState) { page ->
+                        if (page == 0) {
+                            ActivityContent(this@MainActivity, mainViewModel) { showAiDialogState.value = true }
+                        } else {
+                            AnalysisScreen()
+                        }
                     }
                 },
                 bottomBar = bottomBar,
@@ -99,6 +131,10 @@ class MainActivity : ComponentActivity() {
                     if (selectedIndexState.value == 0) {
                         Row {
                             FloatingActionButton(onClick = {
+                                // clear selection if active before opening new screen
+                                if (mainViewModel.selectedIds.value.isNotEmpty()) {
+                                    mainViewModel.clearSelection()
+                                }
                                 context.startActivity(Intent(context, NewTransactionActivity::class.java))
                             }) {
                                 Icon(Icons.Filled.Add, contentDescription = "Add Bill")

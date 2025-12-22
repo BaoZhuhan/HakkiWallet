@@ -19,7 +19,7 @@ import androidx.compose.material.icons.filled.Chat
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
-fun Buttons(modifier: Modifier, context: Context, onAiClick: () -> Unit) {
+fun Buttons(modifier: Modifier, context: Context, onAiClick: () -> Unit, onPreNavigate: () -> Unit = {}) {
     Row(modifier = modifier) {
         ThemeToggleButton(
             modifier = Modifier.align(Alignment.CenterVertically)
@@ -27,7 +27,7 @@ fun Buttons(modifier: Modifier, context: Context, onAiClick: () -> Unit) {
         FilterButton(
             modifier = Modifier.align(Alignment.CenterVertically)
         )
-        AddNewButton(modifier = Modifier.align(Alignment.CenterVertically), context)
+        AddNewButton(modifier = Modifier.align(Alignment.CenterVertically), context = context, onPreNavigate = onPreNavigate)
         // Left-side AI chat icon — call onAiClick when pressed
         IconButton(onClick = {
             try { Toast.makeText(context, "AI 按钮被点击", Toast.LENGTH_SHORT).show() } catch (_: Throwable) {}
