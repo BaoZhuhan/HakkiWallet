@@ -39,6 +39,11 @@ class MainViewModel @Inject constructor(
     var selectedIds = mutableStateOf(setOf<String>())
         private set
 
+    // explicit multi-select mode flag: entering/exiting multi-select is controlled via these APIs
+    // so that clearing `selectedIds` does not implicitly exit multi-select.
+    var isMultiSelect = mutableStateOf(false)
+        private set
+
     // Confirmation dialog state for multi-delete
     var showDeleteConfirmation = mutableStateOf(false)
         private set
@@ -60,6 +65,8 @@ class MainViewModel @Inject constructor(
             }
             // Ensure transaction_items table is populated for analysis aggregation
             repository.ensureTransactionItemsPopulated()
+            // Normalize any legacy transactionType values in the existing DB
+            repository.normalizeTransactionTypesInDb()
         }
     }
 
@@ -80,13 +87,26 @@ class MainViewModel @Inject constructor(
     }
 
     // Selection helpers
+    fun enterMultiSelect() {
+        isMultiSelect.value = true
+    }
+
+    fun exitMultiSelect() {
+        // clear selection and disable multi-select mode
+        selectedIds.value = emptySet()
+        isMultiSelect.value = false
+        showDeleteConfirmation.value = false
+    }
+
     fun toggleSelection(id: String) {
         val set = selectedIds.value.toMutableSet()
         if (!set.remove(id)) set.add(id)
+
         selectedIds.value = set
     }
 
     fun clearSelection() {
+        // only clear selection; do NOT change isMultiSelect — exiting must be explicit
         selectedIds.value = emptySet()
     }
 
@@ -112,7 +132,7 @@ class MainViewModel @Inject constructor(
                 }
             }
             // clear selection on UI thread
-            viewModelScope.launch(Dispatchers.Main) { clearSelection() }
+            viewModelScope.launch(Dispatchers.Main) { exitMultiSelect() }
         }
     }
 
@@ -378,7 +398,8 @@ class MainViewModel @Inject constructor(
                 val category = if (obj.has("category") && !obj.get("category").isJsonNull) obj.get("category").asString else "其他"
 
                 // transactionType not present in original invoice-like data; default to expense
-                val transactionType = if (obj.has("transactionType") && !obj.get("transactionType").isJsonNull) obj.get("transactionType").asString else com.example.account.utils.Constants.EXPENSE_TYPE
+                val rawType = if (obj.has("transactionType") && !obj.get("transactionType").isJsonNull) obj.get("transactionType").asString else com.example.account.utils.Constants.EXPENSE_TYPE
+                val transactionType = com.example.account.utils.Constants.normalizeTransactionType(rawType)
 
                 val items = mutableListOf<TransactionItem>()
                 if (obj.has("items") && obj.get("items").isJsonArray) {
@@ -462,7 +483,7 @@ class MainViewModel @Inject constructor(
           - createdAt (string, 建议使用 ISO 日期或可解析的日期文本)
           - description (string)
           - category (string)
-          - transactionType (string, 例如 "EXPENSE" 或 "INCOME")
+          - transactionType (string, 例如 "支出" 或 "收入")
           - items (array): 每个 item 至少包含 name (string) 和 amount (number)。也可包含 price, quantity 等字段。
 
         注意：请以上面提供的“系统当前日期”作为参考来推断或填充交易日期字段（createdAt）。若原始文本中包含明确的日期信息，应使用文本中识别到的日期；若无法识别，请使用系统当前日期作为交易日期。
@@ -474,7 +495,7 @@ class MainViewModel @Inject constructor(
             "createdAt": "2025-01-02",
             "description": "餐厅消费",
             "category": "餐饮",
-            "transactionType": "EXPENSE",
+            "transactionType": "支出",
             "items": [ { "name": "午餐", "amount": 45.6 } ]
           }
         ]

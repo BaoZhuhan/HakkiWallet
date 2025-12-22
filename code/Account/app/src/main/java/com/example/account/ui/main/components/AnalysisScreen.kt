@@ -222,15 +222,11 @@ fun AnalysisScreen(
 
     // Normalize type matching: accept constants and Chinese labels
     fun isIncomeType(type: String?): Boolean {
-        if (type == null) return false
-        val t = type.lowercase().trim()
-        return t == Constants.INCOME_TYPE || t == "收入"
+        return Constants.normalizeTransactionType(type) == Constants.INCOME_TYPE
     }
 
     fun isExpenseType(type: String?): Boolean {
-        if (type == null) return false
-        val t = type.lowercase().trim()
-        return t == Constants.EXPENSE_TYPE || t == "支出"
+        return Constants.normalizeTransactionType(type) == Constants.EXPENSE_TYPE
     }
 
     val income = breakdown.filter { isIncomeType(it.type) }

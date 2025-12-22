@@ -81,9 +81,9 @@ class MainActivity : ComponentActivity() {
                         label = { Text("主页") },
                         selected = selectedIndexState.value == 0,
                         onClick = {
-                            // If currently in multi-select mode, clear selection before switching
-                            if (mainViewModel.selectedIds.value.isNotEmpty()) {
-                                mainViewModel.clearSelection()
+                            // If currently in multi-select mode, exit multi-select before switching
+                            if (mainViewModel.isMultiSelect.value) {
+                                mainViewModel.exitMultiSelect()
                             }
                             // animate pager to page 0
                             coroutineScope.launch { pagerState.animateScrollToPage(0) }
@@ -95,9 +95,9 @@ class MainActivity : ComponentActivity() {
                         label = { Text("分析") },
                         selected = selectedIndexState.value == 1,
                         onClick = {
-                            // If currently in multi-select mode, clear selection before switching
-                            if (mainViewModel.selectedIds.value.isNotEmpty()) {
-                                mainViewModel.clearSelection()
+                            // If currently in multi-select mode, exit multi-select before switching
+                            if (mainViewModel.isMultiSelect.value) {
+                                mainViewModel.exitMultiSelect()
                             }
                             coroutineScope.launch { pagerState.animateScrollToPage(1) }
                         }
@@ -108,8 +108,8 @@ class MainActivity : ComponentActivity() {
             // Keep selectedIndexState in sync with pager's current page, and clear selection on page change
             LaunchedEffect(pagerState) {
                 snapshotFlow { pagerState.currentPage }.collect { newPage: Int ->
-                    if (mainViewModel.selectedIds.value.isNotEmpty()) {
-                        mainViewModel.clearSelection()
+                    if (mainViewModel.isMultiSelect.value) {
+                        mainViewModel.exitMultiSelect()
                     }
                     selectedIndexState.value = newPage
                 }
@@ -132,8 +132,8 @@ class MainActivity : ComponentActivity() {
                         Row {
                             FloatingActionButton(onClick = {
                                 // clear selection if active before opening new screen
-                                if (mainViewModel.selectedIds.value.isNotEmpty()) {
-                                    mainViewModel.clearSelection()
+                                if (mainViewModel.isMultiSelect.value) {
+                                    mainViewModel.exitMultiSelect()
                                 }
                                 context.startActivity(Intent(context, NewTransactionActivity::class.java))
                             }) {
@@ -152,7 +152,9 @@ class MainActivity : ComponentActivity() {
                 selectedCount = mainViewModel.selectedIds.value.size,
                 // Instead of deleting immediately, ask ViewModel to request confirmation
                 onDeleteSelected = { mainViewModel.requestDeleteConfirmation() },
-                onCancelSelection = { mainViewModel.clearSelection() }
+                onCancelSelection = { mainViewModel.exitMultiSelect() },
+                isMultiSelect = mainViewModel.isMultiSelect.value,
+                showChat = selectedIndexState.value == 0
             )
 
             // Show AI dialog when requested

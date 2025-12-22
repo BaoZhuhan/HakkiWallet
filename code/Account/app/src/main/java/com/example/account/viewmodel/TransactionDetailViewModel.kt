@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.account.model.Transaction
+import com.example.account.model.TransactionAndTransactionItems
 import com.example.account.repository.TransactionRepository
 import com.example.account.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +25,9 @@ class TransactionDetailViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     fun getTransactionById(id: String?): LiveData<Transaction> = repository.getTransactionById(id)
+
+    // New: return the transaction joined with items read from transaction_items (canonical source)
+    fun getTransactionWithItemsById(id: String?): LiveData<TransactionAndTransactionItems> = repository.getTransactionWithItemsById(id)
 
     fun deleteTransaction(transaction: Transaction) {
         viewModelScope.launch(Dispatchers.IO + NonCancellable) {

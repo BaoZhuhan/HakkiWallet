@@ -17,6 +17,14 @@ import com.example.account.viewmodel.NewTransactionViewModel
 fun TransactionInfoInput(newTransactionViewModel: NewTransactionViewModel) {
     val transaction = newTransactionViewModel.transaction
 
+    // Helpers to convert between internal code and UI label
+    fun typeCodeToLabel(typeCode: String): String {
+        return if (typeCode == Constants.INCOME_TYPE) "收入" else "支出"
+    }
+    fun typeLabelToCode(label: String): String {
+        return if (label == "收入") Constants.INCOME_TYPE else Constants.EXPENSE_TYPE
+    }
+
     Column(modifier = Modifier.padding(bottom = 10.dp)) {
         // 交易日期
         CustomCalendarInput(
@@ -31,12 +39,16 @@ fun TransactionInfoInput(newTransactionViewModel: NewTransactionViewModel) {
             onValueChange = { newTransactionViewModel.onTransactionChange(transaction.copy(description = it)) },
             placeholder = "输入交易描述"
         )
-        // 交易类型（收入/支出）
+        // 交易类型（收入/支出） - show labels but store codes
+        val currentTypeLabel = if (transaction.transactionType.isBlank()) typeCodeToLabel(Constants.EXPENSE_TYPE) else typeCodeToLabel(transaction.transactionType)
         CustomDropDownInput(
             label = "交易类型",
             options = listOf("收入", "支出"),
-            selectedOption = transaction.transactionType,
-            onOptionSelected = { newTransactionViewModel.onTransactionChange(transaction.copy(transactionType = it)) }
+            selectedOption = currentTypeLabel,
+            onOptionSelected = {
+                val code = typeLabelToCode(it)
+                newTransactionViewModel.onTransactionChange(transaction.copy(transactionType = code))
+            }
         )
         // 交易分类
         CustomDropDownInput(
@@ -58,11 +70,14 @@ fun TransactionInfoInput(newTransactionViewModel: NewTransactionViewModel) {
     }
 }
 
-// 根据交易类型获取分类选项
-fun getCategoryOptions(transactionType: String): List<String> {
-    return when (transactionType) {
-        "收入" -> listOf("工资", "奖金", "投资收益", "兼职", "其他收入")
-        "支出" -> listOf("餐饮", "交通", "购物", "住房", "娱乐", "医疗", "教育", "其他支出")
-        else -> listOf("餐饮", "交通", "购物", "住房", "娱乐", "医疗", "教育", "其他")
+// 根据交易类型 code 获取分类选项
+fun getCategoryOptions(transactionTypeCode: String): List<String> {
+    return when (transactionTypeCode) {
+        Constants.INCOME_TYPE -> Constants.INCOME_CATEGORIES
+        Constants.EXPENSE_TYPE -> Constants.EXPENSE_CATEGORIES
+        // If stored value is legacy Chinese label, handle that too
+        "收入" -> Constants.INCOME_CATEGORIES
+        "支出" -> Constants.EXPENSE_CATEGORIES
+        else -> Constants.EXPENSE_CATEGORIES
     }
 }

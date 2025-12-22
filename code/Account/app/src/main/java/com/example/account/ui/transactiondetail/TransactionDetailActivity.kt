@@ -26,17 +26,20 @@ class TransactionDetailActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val transaction = transactionDetailViewModel.getTransactionById(intent.getStringExtra("id"))
+            val txWithItems = transactionDetailViewModel.getTransactionWithItemsById(intent.getStringExtra("id"))
                 .observeAsState(null)
+
             ActivityTemplate(
                 content = {
-                    transaction.value?.let {
-                        ActivityContent(it)
+                    txWithItems.value?.let { pair ->
+                        val merged = pair.transaction.copy(items = pair.items.toMutableList())
+                        ActivityContent(merged)
                     }
                 },
                 bottomBar = {
-                    transaction.value?.let {
-                        BottomBar(it, transactionDetailViewModel, this)
+                    txWithItems.value?.let { pair ->
+                        val merged = pair.transaction.copy(items = pair.items.toMutableList())
+                        BottomBar(merged, transactionDetailViewModel, this)
                     }
                 },
                 showGoBack = true,

@@ -52,7 +52,8 @@ object AiJsonParser {
 
         val category = if (obj.has("category") && !obj.get("category").isJsonNull) obj.get("category").asString else "其他"
 
-        val transactionType = if (obj.has("transactionType") && !obj.get("transactionType").isJsonNull) obj.get("transactionType").asString else Constants.EXPENSE_TYPE
+        val rawTransactionType = if (obj.has("transactionType") && !obj.get("transactionType").isJsonNull) obj.get("transactionType").asString else Constants.EXPENSE_TYPE
+        val transactionType = Constants.normalizeTransactionType(rawTransactionType)
 
         val items = mutableListOf<TransactionItem>()
         if (obj.has("items") && obj.get("items").isJsonArray) {

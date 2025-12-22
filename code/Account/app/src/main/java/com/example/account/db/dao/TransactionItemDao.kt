@@ -16,7 +16,7 @@ interface TransactionItemDao {
 
     @Transaction
     @Query("SELECT * FROM transactions WHERE id = :id")
-    fun readAllItems(id: String): LiveData<List<TransactionAndTransactionItems>>
+    fun getTransactionWithItems(id: String): LiveData<TransactionAndTransactionItems>
 
     @Update
     suspend fun updateItem(item: TransactionItem)
