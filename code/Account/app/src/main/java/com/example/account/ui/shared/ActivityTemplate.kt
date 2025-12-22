@@ -28,8 +28,11 @@ fun ActivityTemplate(
     onToggleTheme: (() -> Unit)? = null,
     // Selection support
     selectedCount: Int = 0,
+    isMultiSelect: Boolean = false,
     onDeleteSelected: (() -> Unit)? = null,
     onCancelSelection: (() -> Unit)? = null,
+    // Whether to show the bottom-left chat icon. Caller should pass `selectedIndex == 0` to show it only on home.
+    showChat: Boolean = true,
     // Optional callback for opening the chat/AI dialog. Parent can supply and control visibility.
     onOpenChat: (() -> Unit)? = null
 ) {
@@ -42,6 +45,7 @@ fun ActivityTemplate(
                     isDarkTheme,
                     onToggleTheme,
                     selectedCount = selectedCount,
+                    isMultiSelect = isMultiSelect,
                     onDeleteSelected = onDeleteSelected,
                     onCancelSelection = onCancelSelection
                 )
@@ -54,8 +58,8 @@ fun ActivityTemplate(
                 Box(modifier = Modifier.padding(padding)) {
                     content()
 
-                    // Show a bottom-left chat icon on main screens (when there's no explicit GoBack)
-                    if (!showGoBack) {
+                    // Show a bottom-left chat icon only when caller allows it and there's no explicit GoBack
+                    if (showChat && !showGoBack) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             FloatingActionButton(
                                 onClick = {

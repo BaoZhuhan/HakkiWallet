@@ -5,7 +5,9 @@ import androidx.lifecycle.LiveData
 import com.example.account.db.dao.TransactionDao
 import com.example.account.db.dao.TransactionItemDao
 import com.example.account.model.Transaction
+import com.example.account.model.TransactionAndTransactionItems
 import com.example.account.model.CategoryTotalByType
+import com.example.account.utils.Constants
 import javax.inject.Inject
 
 /**
@@ -40,6 +42,11 @@ class TransactionRepository @Inject constructor(
 
     fun getTransactionById(id: String?): LiveData<Transaction> {
         return transactionDao.getTransactionById(id)
+    }
+
+    // New: get transaction with items joined from transaction_items to ensure UI shows latest items
+    fun getTransactionWithItemsById(id: String?): LiveData<TransactionAndTransactionItems> {
+        return transactionItemDao.getTransactionWithItems(id ?: "")
     }
 
     suspend fun isTransactionIdExists(id: String): Boolean {
@@ -103,5 +110,20 @@ class TransactionRepository @Inject constructor(
             }
         }
         Log.d("TransactionRepository", "ensureTransactionItemsPopulated: inserted total items = $totalInserted")
+    }
+
+    // New: normalize transactionType values stored in transactions table to canonical codes (income/expense)
+    suspend fun normalizeTransactionTypesInDb() {
+        val all = transactionDao.getAllTransactionsList()
+        var updated = 0
+        for (t in all) {
+            val normalized = Constants.normalizeTransactionType(t.transactionType)
+            if (normalized != t.transactionType) {
+                t.transactionType = normalized
+                transactionDao.updateTransaction(t)
+                updated++
+            }
+        }
+        Log.d("TransactionRepository", "normalizeTransactionTypesInDb: updated $updated rows")
     }
 }

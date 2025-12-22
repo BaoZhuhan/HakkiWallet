@@ -49,6 +49,8 @@ fun TransactionCard(
             .padding(8.dp)
     }
 
+    val isIncome = Constants.normalizeTransactionType(transaction.transactionType) == Constants.INCOME_TYPE
+
     Card(
         modifier = backgroundModifier
             .combinedClickable(
@@ -79,7 +81,7 @@ fun TransactionCard(
                 Text(
                     text = String.format(Locale.getDefault(), "¥%.2f", calculateTotal(transaction.items)),
                     style = MaterialTheme.typography.h6,
-                    color = if (transaction.transactionType == Constants.INCOME_TYPE) {
+                    color = if (isIncome) {
                         MaterialTheme.colors.primary
                     } else {
                         MaterialTheme.colors.error

@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.account.R
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -30,6 +29,7 @@ fun TopAppBar(
     onToggleTheme: (() -> Unit)? = null,
     // Selection support
     selectedCount: Int = 0,
+    isMultiSelect: Boolean = false,
     onDeleteSelected: (() -> Unit)? = null,
     onCancelSelection: (() -> Unit)? = null
 ) {
@@ -64,8 +64,8 @@ fun TopAppBar(
                         .align(Alignment.Center)
                 )
             }
-            // If selection active, show selection toolbar actions
-            if (selectedCount > 0) {
+            // If selection active (multi-select mode), show selection toolbar actions
+            if (isMultiSelect) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "${selectedCount} 已选", modifier = Modifier.padding(end = 8.dp))
                     IconButton(onClick = { onDeleteSelected?.invoke() }) {

@@ -34,7 +34,7 @@ fun ActivityContent(context: Context, mainViewModel: MainViewModel, onAiClick: (
                 modifier = Modifier.align(Alignment.CenterVertically),
                 context = context,
                 onAiClick = onAiClick,
-                onPreNavigate = { mainViewModel.clearSelection() }
+                onPreNavigate = { mainViewModel.exitMultiSelect() }
             )
         }
         Column(

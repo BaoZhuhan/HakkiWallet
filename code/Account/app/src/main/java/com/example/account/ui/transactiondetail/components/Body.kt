@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import com.example.account.model.Transaction
 import com.example.account.model.TransactionItem
 import com.example.account.utils.Constants
-import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
@@ -32,7 +31,7 @@ fun Body(transaction: Transaction) {
 private fun TransactionInfoSection(transaction: Transaction) {
     Column(modifier = Modifier.padding(bottom = 20.dp)) {
         InfoRow(label = "交易日期", value = transaction.transactionDate)
-        InfoRow(label = "交易类型", value = getTransactionTypeName(transaction.transactionType))
+        InfoRow(label = "交易类型", value = Constants.transactionTypeLabel(transaction.transactionType))
         InfoRow(label = "交易分类", value = transaction.category)
         InfoRow(label = "交易状态", value = getStatusName(transaction.status))
     }
@@ -111,18 +110,13 @@ private fun TotalRow(total: Double) {
             modifier = Modifier.weight(1f)
         )
         Text(
-            text = String.format("¥%.2f", total),
+            text = String.format(Locale.getDefault(), "¥%.2f", total),
             style = MaterialTheme.typography.h6,
             color = MaterialTheme.colors.primary
         )
     }
 }
 
-// 移除不再需要的formatDate函数，直接使用transactionDate字符串
-
-private fun getTransactionTypeName(type: String): String {
-    return if (type == Constants.INCOME_TYPE) "收入" else "支出"
-}
 
 private fun getStatusName(status: String): String {
     return if (status == Constants.ACTIVE) "活跃" else "已归档"

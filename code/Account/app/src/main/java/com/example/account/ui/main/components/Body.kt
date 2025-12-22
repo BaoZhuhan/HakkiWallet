@@ -35,7 +35,7 @@ fun Body(modifier: Modifier, transactions: List<Transaction>?, context: Context,
                 val isSelected = selectedIds.contains(transaction.id)
 
                 // Only supply onClickToggle when selection mode is active; otherwise allow click to open detail
-                val onClickToggleParam: (() -> Unit)? = if (mainViewModel.selectedIds.value.isNotEmpty()) {
+                val onClickToggleParam: (() -> Unit)? = if (mainViewModel.isMultiSelect.value) {
                     { mainViewModel.toggleSelection(transaction.id) }
                 } else null
 
@@ -43,7 +43,7 @@ fun Body(modifier: Modifier, transactions: List<Transaction>?, context: Context,
                     transaction,
                     modifier = Modifier.animateItemPlacement(),
                     isSelected = isSelected,
-                    onLongPressToggle = { mainViewModel.toggleSelection(transaction.id) },
+                    onLongPressToggle = { mainViewModel.enterMultiSelect(); mainViewModel.toggleSelection(transaction.id) },
                     onClickToggle = onClickToggleParam
                 )
             }
