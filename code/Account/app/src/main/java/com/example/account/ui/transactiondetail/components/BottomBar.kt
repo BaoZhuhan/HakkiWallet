@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.ExperimentalComposeApi
@@ -63,7 +64,8 @@ fun EditButton(transaction: Transaction, activity: Activity, modifier: Modifier 
             intent.putExtra("transaction", transaction)
             ContextCompat.startActivity(activity, intent, null)
         },
-        modifier = modifier,
+        modifier = modifier.height(48.dp),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 8.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primary
         )
@@ -86,7 +88,8 @@ fun DeleteButton(
         onClick = {
             openDialog.value = true
         },
-        modifier = modifier,
+        modifier = modifier.height(48.dp),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 8.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.error
         )

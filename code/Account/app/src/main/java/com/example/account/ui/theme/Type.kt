@@ -8,6 +8,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.account.R
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.material.MaterialTheme
+
 val spartanFontFamily = FontFamily(
     Font(R.font.spartan_bold, weight = FontWeight.Bold),
     Font(R.font.spartan_extra_bold, weight = FontWeight.ExtraBold),
@@ -63,3 +68,40 @@ val Typography = Typography(
     )
 
 )
+
+/**
+ * Return a scaled sp value based on screen width.
+ * Uses 360dp as baseline. Screens smaller than 320dp will be clamped to 320 to avoid extremely small text.
+ */
+@Composable
+fun scaledSp(base: Int): TextUnit {
+    val screenWidth = LocalConfiguration.current.screenWidthDp.coerceAtLeast(320)
+    val scale = screenWidth / 360f
+    return (base * scale).sp
+}
+
+/**
+ * Common app styles using the responsive scaledSp helper. These are small wrappers so screens can opt-in
+ * to responsive sizing without touching the global MaterialTheme typography definitions.
+ */
+@Composable
+fun appTitleStyle(): TextStyle = MaterialTheme.typography.h6.copy(
+    fontSize = scaledSp(18),
+    fontWeight = FontWeight.SemiBold
+)
+
+@Composable
+fun appBodyStyle(): TextStyle = MaterialTheme.typography.body1.copy(
+    fontSize = scaledSp(14)
+)
+
+@Composable
+fun appSmallStyle(): TextStyle = MaterialTheme.typography.caption.copy(
+    fontSize = scaledSp(12)
+)
+
+@Composable
+fun appCaptionStyle(): TextStyle = MaterialTheme.typography.caption.copy(
+    fontSize = scaledSp(11)
+)
+

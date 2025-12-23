@@ -15,6 +15,8 @@ import com.example.account.model.Transaction
 import com.example.account.model.TransactionItem
 import com.example.account.utils.Constants
 import java.util.Locale
+import com.example.account.ui.theme.appBodyStyle
+import com.example.account.ui.theme.appTitleStyle
 
 @Composable
 fun Body(transaction: Transaction) {
@@ -44,13 +46,13 @@ private fun InfoRow(label: String, value: String) {
         .padding(vertical = 4.dp)) {
         Text(
             text = "$label: ",
-            style = MaterialTheme.typography.body1,
+            style = appBodyStyle(),
             color = MaterialTheme.colors.onBackground.copy(alpha = 0.7f),
             modifier = Modifier.weight(1f)
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.body1,
+            style = appBodyStyle(),
             color = MaterialTheme.colors.onBackground
         )
     }
@@ -61,7 +63,7 @@ private fun TransactionItemsSection(items: List<TransactionItem>) {
     Column {
         Text(
             text = "交易项目",
-            style = MaterialTheme.typography.h6,
+            style = appTitleStyle(),
             modifier = Modifier.padding(bottom = 12.dp)
         )
         items.forEachIndexed { index, item ->
@@ -82,17 +84,17 @@ private fun ItemRow(index: Int, name: String, amount: Float) {
         .padding(vertical = 6.dp)) {
         Text(
             text = "$index.",
-            style = MaterialTheme.typography.body1,
+            style = appBodyStyle(),
             modifier = Modifier.width(30.dp)
         )
         Text(
             text = name,
-            style = MaterialTheme.typography.body1,
+            style = appBodyStyle(),
             modifier = Modifier.weight(1f)
         )
         Text(
             text = "¥${amount.toString()}",
-            style = MaterialTheme.typography.body1
+            style = appBodyStyle()
         )
     }
 }
@@ -106,12 +108,12 @@ private fun TotalRow(total: Double) {
         .padding(top = 12.dp)) {
         Text(
             text = "总计",
-            style = MaterialTheme.typography.h6,
+            style = appTitleStyle(),
             modifier = Modifier.weight(1f)
         )
         Text(
             text = String.format(Locale.getDefault(), "¥%.2f", total),
-            style = MaterialTheme.typography.h6,
+            style = appTitleStyle(),
             color = MaterialTheme.colors.primary
         )
     }

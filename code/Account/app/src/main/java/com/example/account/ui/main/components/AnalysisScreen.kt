@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import java.util.Locale
 import kotlin.math.min
 import com.example.account.utils.Constants
+import com.example.account.ui.theme.appBodyStyle
+import com.example.account.ui.theme.appTitleStyle
 
 // Simple data model for analysis summary per category
 data class CategorySummary(
@@ -49,7 +51,7 @@ fun AnalysisScreenContent(
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        Text(text = "账单分析", style = MaterialTheme.typography.h6, fontWeight = FontWeight.Bold, color = MaterialTheme.colors.onBackground)
+        Text(text = "账单分析", style = appTitleStyle(), color = MaterialTheme.colors.onBackground)
         Spacer(modifier = Modifier.height(12.dp))
 
         // Pie + legend row
@@ -63,7 +65,7 @@ fun AnalysisScreenContent(
             Column(modifier = Modifier
                 .padding(start = 12.dp)
                 .fillMaxHeight()) {
-                Text(text = "图例", fontWeight = FontWeight.Bold, color = MaterialTheme.colors.onBackground)
+                Text(text = "图例", style = appBodyStyle().copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colors.onBackground)
                 Spacer(modifier = Modifier.height(8.dp))
                 data.forEach { item ->
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
@@ -71,7 +73,7 @@ fun AnalysisScreenContent(
                             .size(12.dp)
                             .background(color = item.color))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = item.category, color = MaterialTheme.colors.onBackground)
+                        Text(text = item.category, style = appBodyStyle(), color = MaterialTheme.colors.onBackground)
                     }
                 }
             }
@@ -79,7 +81,7 @@ fun AnalysisScreenContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "分类明细 (${data.size} 项)", fontWeight = FontWeight.Bold, color = MaterialTheme.colors.onBackground)
+        Text(text = "分类明细 (${data.size} 项)", style = appBodyStyle().copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colors.onBackground)
         Spacer(modifier = Modifier.height(8.dp))
 
         // Table of categories
@@ -89,8 +91,8 @@ fun AnalysisScreenContent(
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = "分类", fontWeight = FontWeight.Bold, color = MaterialTheme.colors.onBackground)
-                    Text(text = "金额", fontWeight = FontWeight.Bold, color = MaterialTheme.colors.onBackground)
+                    Text(text = "分类", style = appBodyStyle().copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colors.onBackground)
+                    Text(text = "金额", style = appBodyStyle().copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colors.onBackground)
                 }
                 Divider()
 
@@ -100,9 +102,9 @@ fun AnalysisScreenContent(
                             .fillMaxWidth()
                             .background(MaterialTheme.colors.onSurface.copy(alpha = 0.04f))
                             .padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(text = item.category, color = MaterialTheme.colors.onBackground, fontWeight = FontWeight.Medium)
+                            Text(text = item.category, color = MaterialTheme.colors.onBackground, fontWeight = FontWeight.Medium, style = appBodyStyle())
                             val percent = if (total <= 0f) 0f else item.amount / total * 100f
-                            Text(text = "${formatAmount(item.amount)}  (${String.format(Locale.getDefault(), "%.1f", percent)}%)", color = MaterialTheme.colors.onBackground)
+                            Text(text = "${formatAmount(item.amount)}  (${String.format(Locale.getDefault(), "%.1f", percent)}%)", color = MaterialTheme.colors.onBackground, style = appBodyStyle())
                         }
                         Spacer(modifier = Modifier.height(6.dp))
                     }
@@ -134,19 +136,19 @@ private fun BreakdownCard(modifier: Modifier = Modifier, title: String, breakdow
 
     Card(modifier = modifier) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = title, fontWeight = FontWeight.Bold)
+            Text(text = title, style = appBodyStyle().copy(fontWeight = FontWeight.Bold))
             Spacer(modifier = Modifier.height(8.dp))
             if (displayList.isEmpty()) {
-                Text(text = "暂无数据")
+                Text(text = "暂无数据", style = appBodyStyle())
             } else {
                 displayList.forEach { entry ->
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .background(MaterialTheme.colors.onSurface.copy(alpha = 0.04f))
                         .padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(text = entry.category, color = MaterialTheme.colors.onBackground)
+                        Text(text = entry.category, color = MaterialTheme.colors.onBackground, style = appBodyStyle())
                         val percent = if (total <= 0f) 0f else entry.amount / total * 100f
-                        Text(text = "${formatAmount(entry.amount)}  (${String.format(Locale.getDefault(), "%.1f", percent)}%)", color = MaterialTheme.colors.onBackground)
+                        Text(text = "${formatAmount(entry.amount)}  (${String.format(Locale.getDefault(), "%.1f", percent)}%)", color = MaterialTheme.colors.onBackground, style = appBodyStyle())
                     }
                     Spacer(modifier = Modifier.height(6.dp))
                 }
