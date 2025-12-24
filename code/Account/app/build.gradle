@@ -56,6 +56,10 @@ android {
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            // Exclude library-provided .version metadata files which trigger
+            // apksigner "not protected by signature" warnings on some build setups/devices.
+            // Removing these entries prevents warning noise and potential installer issues.
+            excludes += 'META-INF/*.version'
         }
     }
     lint {
