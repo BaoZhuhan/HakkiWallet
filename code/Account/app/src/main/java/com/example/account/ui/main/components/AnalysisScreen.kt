@@ -9,10 +9,14 @@ import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.account.viewmodel.AnalysisViewModel
@@ -40,7 +44,11 @@ fun AnalysisScreenContent(
     modifier: Modifier = Modifier,
     data: List<CategorySummary> = sampleData(),
     incomeBreakdown: List<CategorySummary> = emptyList(),
-    expenseBreakdown: List<CategorySummary> = emptyList()
+    expenseBreakdown: List<CategorySummary> = emptyList(),
+    // new: predicted data passed from parent composable
+    predicted: List<Pair<String, Double>> = emptyList(),
+    selectedMonths: Int = 3,
+    onSelectMonths: (Int) -> Unit = {}
 ) {
     val total = remember(data) { data.sumOf { it.amount.toDouble() }.toFloat() }
     val scrollState = rememberScrollState()
@@ -119,6 +127,41 @@ fun AnalysisScreenContent(
             BreakdownCard(title = "收入汇总", breakdown = incomeBreakdown, modifier = Modifier.weight(1f))
             BreakdownCard(title = "支出汇总", breakdown = expenseBreakdown, modifier = Modifier.weight(1f))
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Predicted expenses card
+        Card(modifier = Modifier.fillMaxWidth(), elevation = 6.dp) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(text = "未来 $selectedMonths 个月花费预测", style = appBodyStyle().copy(fontWeight = FontWeight.Bold))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // month selection buttons
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val options = listOf(1, 3, 6)
+                    options.forEach { opt ->
+                        Button(onClick = { onSelectMonths(opt) }, modifier = Modifier) {
+                            Text(text = if (opt == selectedMonths) "$opt 月 (当前)" else "$opt 月")
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                if (predicted.isEmpty()) {
+                    Text(text = "暂无预测数据", style = appBodyStyle())
+                } else {
+                    predicted.forEach { (ym, value) ->
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 6.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text(text = ym, style = appBodyStyle())
+                            Text(text = formatAmountDouble(value), style = appBodyStyle())
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -184,6 +227,10 @@ private fun formatAmount(value: Float): String {
     return String.format(Locale.getDefault(), "¥%.2f", value)
 }
 
+private fun formatAmountDouble(value: Double): String {
+    return String.format(Locale.getDefault(), "¥%.2f", value)
+}
+
 private fun sampleData(): List<CategorySummary> {
     return listOf(
         CategorySummary("餐饮", 320f, Color(0xFFEF5350)),
@@ -237,6 +284,23 @@ fun AnalysisScreen(
     val incomeSummary = income.mapIndexed { index, it -> CategorySummary(it.category, it.total, paletteColor(index)) }
     val expenseSummary = expense.mapIndexed { index, it -> CategorySummary(it.category, it.total, paletteColor(index + income.size)) }
 
-    // Delegate to UI-only composable
-    AnalysisScreenContent(modifier = modifier, data = data, incomeBreakdown = incomeSummary, expenseBreakdown = expenseSummary)
+    // predicted LiveData
+    var selectedMonths by remember { mutableStateOf(3) }
+    val predicted by viewModel.predictedMonthlyExpenses.observeAsState(initial = emptyList())
+
+    // load predictions whenever selectedMonths changes
+    LaunchedEffect(selectedMonths) {
+        viewModel.loadPredictedMonthlyExpenses(selectedMonths, startFromNextMonth = true)
+    }
+
+    // Delegate to UI-only composable with predicted data
+    AnalysisScreenContent(
+        modifier = modifier,
+        data = data,
+        incomeBreakdown = incomeSummary,
+        expenseBreakdown = expenseSummary,
+        predicted = predicted,
+        selectedMonths = selectedMonths,
+        onSelectMonths = { selectedMonths = it }
+    )
 }

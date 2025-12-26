@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep BuildConfig AI_API_KEY so reflective reads still work after R8/ProGuard
+-keep class com.example.account.BuildConfig {
+    public static final java.lang.String AI_API_KEY;
+}

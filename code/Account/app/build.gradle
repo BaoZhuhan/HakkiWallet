@@ -22,8 +22,23 @@ android {
             useSupportLibrary = true
         }
 
-        // Allow injecting an API key at build time via -P AI_API_KEY or gradle.properties/local gradle property
-        def aiKey = project.hasProperty('AI_API_KEY') ? project.property('AI_API_KEY') : ""
+        // Allow injecting an API key at build time via -P AI_API_KEY, environment variable, or local.properties
+        def aiKey = ""
+        if (project.hasProperty('AI_API_KEY')) {
+            aiKey = project.property('AI_API_KEY')
+        } else if (System.getenv('AI_API_KEY') != null) {
+            aiKey = System.getenv('AI_API_KEY')
+        } else {
+            // Try to read from local.properties (not checked into VCS) as a convenience for exported APKs
+            def localProps = new Properties()
+            def localFile = rootProject.file('local.properties')
+            if (localFile.exists()) {
+                localFile.withInputStream { stream -> localProps.load(stream) }
+                if (localProps.getProperty('AI_API_KEY') != null) {
+                    aiKey = localProps.getProperty('AI_API_KEY')
+                }
+            }
+        }
         buildConfigField "String", "AI_API_KEY", "\"${aiKey}\""
     }
 
