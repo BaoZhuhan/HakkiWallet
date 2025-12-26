@@ -1,231 +1,372 @@
 [
   {
-    "id": "RT3080",
-    "createdAt": "2021-08-18",
-    "paymentDue": "2021-08-19",
-    "description": "Re-branding",
-    "paymentTerms": 1,
-    "clientName": "Jensen Huang",
-    "clientEmail": "jensenh@mail.com",
+    "id": "CN0001",
+    "createdAt": "2025-01-05",
+    "description": "办公室租金（1月）",
     "status": "paid",
-    "senderAddress": {
-      "street": "19 Union Terrace",
-      "city": "London",
-      "postCode": "E1 3EZ",
-      "country": "United Kingdom"
-    },
-    "clientAddress": {
-      "street": "106 Kendell Street",
-      "city": "Sharrington",
-      "postCode": "NR24 5WQ",
-      "country": "United Kingdom"
-    },
+    "transactionType": "expense",
+    "category": "租金",
     "items": [
-      {
-        "name": "Brand Guidelines",
-        "quantity": 1,
-        "price": 1800.90,
-        "total": 1800.90
-      }
+      { "name": "租金", "quantity": 1, "price": 15000.00, "total": 15000.00 }
     ],
-    "total": 1800.90
+    "total": 15000.00
   },
   {
-    "id": "XM9141",
-    "createdAt": "2021-08-21",
-    "paymentDue": "2021-09-20",
-    "description": "Graphic Design",
-    "paymentTerms": 30,
-    "clientName": "Alex Grim",
-    "clientEmail": "alexgrim@mail.com",
-    "status": "pending",
-    "senderAddress": {
-      "street": "19 Union Terrace",
-      "city": "London",
-      "postCode": "E1 3EZ",
-      "country": "United Kingdom"
-    },
-    "clientAddress": {
-      "street": "84 Church Way",
-      "city": "Bradford",
-      "postCode": "BD1 9PB",
-      "country": "United Kingdom"
-    },
-    "items": [
-      {
-        "name": "Banner Design",
-        "quantity": 1,
-        "price": 156.00,
-        "total": 156.00
-      },
-      {
-        "name": "Email Design",
-        "quantity": 2,
-        "price": 200.00,
-        "total": 400.00
-      }
-    ],
-    "total": 556.00
-  },
-  {
-    "id": "RG0314",
-    "createdAt": "2021-09-24",
-    "paymentDue": "2021-10-01",
-    "description": "Website Redesign",
-    "paymentTerms": 7,
-    "clientName": "John Morrison",
-    "clientEmail": "jm@myco.com",
+    "id": "CN0002",
+    "createdAt": "2025-01-12",
+    "description": "团队午餐",
     "status": "paid",
-    "senderAddress": {
-      "street": "19 Union Terrace",
-      "city": "London",
-      "postCode": "E1 3EZ",
-      "country": "United Kingdom"
-    },
-    "clientAddress": {
-      "street": "79 Dover Road",
-      "city": "Westhall",
-      "postCode": "IP19 3PF",
-      "country": "United Kingdom"
-    },
+    "transactionType": "expense",
+    "category": "餐饮",
     "items": [
-      {
-        "name": "Website Redesign",
-        "quantity": 1,
-        "price": 14002.33,
-        "total": 14002.33
-      }
+      { "name": "午餐招待", "quantity": 1, "price": 820.50, "total": 820.50 }
     ],
-    "total": 14002.33
+    "total": 820.50
   },
   {
-    "id": "RT2080",
-    "createdAt": "2021-10-11",
-    "paymentDue": "2021-10-12",
-    "description": "Logo Concept",
-    "paymentTerms": 1,
-    "clientName": "Alysa Werner",
-    "clientEmail": "alysa@email.co.uk",
+    "id": "CN0003",
+    "createdAt": "2025-01-20",
+    "description": "广告收入（1月）",
+    "status": "paid",
+    "transactionType": "income",
+    "category": "广告/营销",
+    "items": [
+      { "name": "展示广告收入", "quantity": 1, "price": 5000.00, "total": 5000.00 }
+    ],
+    "total": 5000.00
+  },
+  {
+    "id": "CN0004",
+    "createdAt": "2025-01-25",
+    "description": "办公耗材采购",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "办公用品",
+    "items": [
+      { "name": "打印纸", "quantity": 10, "price": 25.00, "total": 250.00 },
+      { "name": "墨盒", "quantity": 2, "price": 180.00, "total": 360.00 }
+    ],
+    "total": 610.00
+  },
+  {
+    "id": "CN0005",
+    "createdAt": "2025-01-30",
+    "description": "云服务器费用（1月）",
     "status": "pending",
-    "senderAddress": {
-      "street": "19 Union Terrace",
-      "city": "London",
-      "postCode": "E1 3EZ",
-      "country": "United Kingdom"
-    },
-    "clientAddress": {
-      "street": "63 Warwick Road",
-      "city": "Carlisle",
-      "postCode": "CA20 2TG",
-      "country": "United Kingdom"
-    },
+    "transactionType": "expense",
+    "category": "云服务",
     "items": [
-      {
-        "name": "Logo Sketches",
-        "quantity": 1,
-        "price": 102.04,
-        "total": 102.04
-      }
+      { "name": "ECS 云主机（3台）", "quantity": 3, "price": 1200.00, "total": 3600.00 }
     ],
-    "total": 102.04
+    "total": 3600.00
+  },
+
+  {
+    "id": "CN0006",
+    "createdAt": "2025-02-04",
+    "description": "差旅报销（深圳→北京）",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "差旅",
+    "items": [
+      { "name": "机票", "quantity": 2, "price": 900.00, "total": 1800.00 },
+      { "name": "酒店", "quantity": 3, "price": 450.00, "total": 1350.00 }
+    ],
+    "total": 3150.00
   },
   {
-    "id": "AA1449",
-    "createdAt": "2021-10-7",
-    "paymentDue": "2021-10-14",
-    "description": "Re-branding",
-    "paymentTerms": 7,
-    "clientName": "Mellisa Clarke",
-    "clientEmail": "mellisa.clarke@example.com",
+    "id": "CN0007",
+    "createdAt": "2025-02-10",
+    "description": "设计软件订阅（年度）",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "订阅",
+    "items": [
+      { "name": "年度订阅（团队）", "quantity": 1, "price": 4800.00, "total": 4800.00 }
+    ],
+    "total": 4800.00
+  },
+  {
+    "id": "CN0008",
+    "createdAt": "2025-02-14",
+    "description": "市场活动物料打印",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "印刷/物料",
+    "items": [
+      { "name": "海报打印（200张）", "quantity": 200, "price": 5.00, "total": 1000.00 }
+    ],
+    "total": 1000.00
+  },
+  {
+    "id": "CN0009",
+    "createdAt": "2025-02-20",
+    "description": "外包收入（阶段款）",
     "status": "pending",
-    "senderAddress": {
-      "street": "19 Union Terrace",
-      "city": "London",
-      "postCode": "E1 3EZ",
-      "country": "United Kingdom"
-    },
-    "clientAddress": {
-      "street": "46 Abbey Row",
-      "city": "Cambridge",
-      "postCode": "CB5 6EG",
-      "country": "United Kingdom"
-    },
+    "transactionType": "income",
+    "category": "外包/服务收入",
     "items": [
-      {
-        "name": "New Logo",
-        "quantity": 1,
-        "price": 1532.33,
-        "total": 1532.33
-      },
-      {
-        "name": "Brand Guidelines",
-        "quantity": 1,
-        "price": 2500.00,
-        "total": 2500.00
-      }
+      { "name": "开发阶段一收入", "quantity": 1, "price": 22000.00, "total": 22000.00 }
     ],
-    "total": 4032.33
+    "total": 22000.00
   },
   {
-    "id": "TY9141",
-    "createdAt": "2021-10-01",
-    "paymentDue": "2021-10-31",
-    "description": "Landing Page Design",
-    "paymentTerms": 30,
-    "clientName": "Thomas Wayne",
-    "clientEmail": "thomas@dc.com",
+    "id": "CN0010",
+    "createdAt": "2025-02-27",
+    "description": "水电物业费（2月）",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "水电物业",
+    "items": [
+      { "name": "水电物业合计", "quantity": 1, "price": 2300.00, "total": 2300.00 }
+    ],
+    "total": 2300.00
+  },
+
+  {
+    "id": "CN0011",
+    "createdAt": "2025-03-03",
+    "description": "员工培训费用",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "培训",
+    "items": [
+      { "name": "管理培训（10人）", "quantity": 1, "price": 8000.00, "total": 8000.00 }
+    ],
+    "total": 8000.00
+  },
+  {
+    "id": "CN0012",
+    "createdAt": "2025-03-09",
+    "description": "办公电脑维修",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "维修",
+    "items": [
+      { "name": "笔记本电池更换", "quantity": 2, "price": 450.00, "total": 900.00 }
+    ],
+    "total": 900.00
+  },
+  {
+    "id": "CN0013",
+    "createdAt": "2025-03-15",
+    "description": "线上推广费用",
     "status": "pending",
-    "senderAddress": {
-      "street": "19 Union Terrace",
-      "city": "London",
-      "postCode": "E1 3EZ",
-      "country": "United Kingdom"
-    },
-    "clientAddress": {
-      "street": "3964  Queens Lane",
-      "city": "Gotham",
-      "postCode": "60457",
-      "country": "United States of America"
-    },
+    "transactionType": "expense",
+    "category": "推广",
     "items": [
-      {
-        "name": "Web Design",
-        "quantity": 1,
-        "price": 6155.91,
-        "total": 6155.91
-      }
+      { "name": "社媒广告", "quantity": 1, "price": 7200.00, "total": 7200.00 }
     ],
-    "total": 6155.91
+    "total": 7200.00
   },
   {
-    "id": "FV2353",
-    "createdAt": "2021-11-05",
-    "paymentDue": "2021-11-12",
-    "description": "Logo Re-design",
-    "paymentTerms": 7,
-    "clientName": "Anita Wainwright",
-    "clientEmail": "",
-    "status": "draft",
-    "senderAddress": {
-      "street": "19 Union Terrace",
-      "city": "London",
-      "postCode": "E1 3EZ",
-      "country": "United Kingdom"
-    },
-    "clientAddress": {
-      "street": "",
-      "city": "",
-      "postCode": "",
-      "country": ""
-    },
+    "id": "CN0014",
+    "createdAt": "2025-03-21",
+    "description": "办公保险（年度）",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "保险",
     "items": [
-      {
-        "name": "Logo Re-design",
-        "quantity": 1,
-        "price": 3102.04,
-        "total": 3102.04
-      }
+      { "name": "物业责任保险", "quantity": 1, "price": 12000.00, "total": 12000.00 }
     ],
-    "total": 3102.04
+    "total": 12000.00
+  },
+  {
+    "id": "CN0015",
+    "createdAt": "2025-03-28",
+    "description": "员工福利 - 水果配送",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "福利",
+    "items": [
+      { "name": "水果配送（月）", "quantity": 1, "price": 600.00, "total": 600.00 }
+    ],
+    "total": 600.00
+  },
+
+  {
+    "id": "CN0016",
+    "createdAt": "2025-04-04",
+    "description": "市场调研费用",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "调研",
+    "items": [
+      { "name": "问卷与分析", "quantity": 1, "price": 3800.00, "total": 3800.00 }
+    ],
+    "total": 3800.00
+  },
+  {
+    "id": "CN0017",
+    "createdAt": "2025-04-11",
+    "description": "招聘广告投放",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "招聘",
+    "items": [
+      { "name": "职位推广（3个）", "quantity": 3, "price": 300.00, "total": 900.00 }
+    ],
+    "total": 900.00
+  },
+  {
+    "id": "CN0018",
+    "createdAt": "2025-04-18",
+    "description": "域名与证书续费",
+    "status": "pending",
+    "transactionType": "expense",
+    "category": "域名/证书",
+    "items": [
+      { "name": "域名续费（3个）", "quantity": 3, "price": 120.00, "total": 360.00 },
+      { "name": "SSL证书", "quantity": 1, "price": 800.00, "total": 800.00 }
+    ],
+    "total": 1160.00
+  },
+  {
+    "id": "CN0019",
+    "createdAt": "2025-04-24",
+    "description": "网络带宽升级",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "网络",
+    "items": [
+      { "name": "专线带宽（年付）", "quantity": 1, "price": 6000.00, "total": 6000.00 }
+    ],
+    "total": 6000.00
+  },
+  {
+    "id": "CN0020",
+    "createdAt": "2025-04-30",
+    "description": "样品销售收入",
+    "status": "paid",
+    "transactionType": "income",
+    "category": "销售收入",
+    "items": [
+      { "name": "样品售出（10件）", "quantity": 10, "price": 120.00, "total": 1200.00 }
+    ],
+    "total": 1200.00
+  },
+
+  {
+    "id": "CN0021",
+    "createdAt": "2025-05-06",
+    "description": "法律咨询收入",
+    "status": "paid",
+    "transactionType": "income",
+    "category": "咨询/服务收入",
+    "items": [
+      { "name": "合同与咨询服务", "quantity": 1, "price": 3500.00, "total": 3500.00 }
+    ],
+    "total": 3500.00
+  },
+  {
+    "id": "CN0022",
+    "createdAt": "2025-05-12",
+    "description": "测试设备采购",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "设备采购",
+    "items": [
+      { "name": "测试工装（2件）", "quantity": 2, "price": 2200.00, "total": 4400.00 }
+    ],
+    "total": 4400.00
+  },
+  {
+    "id": "CN0023",
+    "createdAt": "2025-05-18",
+    "description": "品牌设计外包（阶段款）",
+    "status": "pending",
+    "transactionType": "expense",
+    "category": "设计/外包",
+    "items": [
+      { "name": "阶段设计费", "quantity": 1, "price": 15000.00, "total": 15000.00 }
+    ],
+    "total": 15000.00
+  },
+  {
+    "id": "CN0024",
+    "createdAt": "2025-05-25",
+    "description": "地铁/出租补贴",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "交通",
+    "items": [
+      { "name": "差旅补贴", "quantity": 1, "price": 420.00, "total": 420.00 }
+    ],
+    "total": 420.00
+  },
+
+  {
+    "id": "CN0025",
+    "createdAt": "2025-06-02",
+    "description": "半年度财务审计",
+    "status": "pending",
+    "transactionType": "expense",
+    "category": "审计",
+    "items": [
+      { "name": "审计服务", "quantity": 1, "price": 18000.00, "total": 18000.00 }
+    ],
+    "total": 18000.00
+  },
+  {
+    "id": "CN0026",
+    "createdAt": "2025-06-08",
+    "description": "活动场地租赁",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "场地租赁",
+    "items": [
+      { "name": "场地租赁（1天）", "quantity": 1, "price": 5000.00, "total": 5000.00 }
+    ],
+    "total": 5000.00
+  },
+  {
+    "id": "CN0027",
+    "createdAt": "2025-06-14",
+    "description": "快递与仓储费用",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "物流",
+    "items": [
+      { "name": "快递费（30单）", "quantity": 30, "price": 12.00, "total": 360.00 },
+      { "name": "短期仓储费", "quantity": 1, "price": 800.00, "total": 800.00 }
+    ],
+    "total": 1160.00
+  },
+  {
+    "id": "CN0028",
+    "createdAt": "2025-06-20",
+    "description": "客户礼品采购",
+    "status": "pending",
+    "transactionType": "expense",
+    "category": "礼品/赠品",
+    "items": [
+      { "name": "定制礼品（50份）", "quantity": 50, "price": 45.00, "total": 2250.00 }
+    ],
+    "total": 2250.00
+  },
+  {
+    "id": "CN0029",
+    "createdAt": "2025-06-25",
+    "description": "办公设备租赁",
+    "status": "paid",
+    "transactionType": "expense",
+    "category": "设备租赁",
+    "items": [
+      { "name": "投影仪租赁（1台）", "quantity": 1, "price": 600.00, "total": 600.00 }
+    ],
+    "total": 600.00
+  },
+  {
+    "id": "CN0030",
+    "createdAt": "2025-06-30",
+    "description": "影像服务收入（活动摄影与视频）",
+    "status": "pending",
+    "transactionType": "income",
+    "category": "媒体/制作收入",
+    "items": [
+      { "name": "摄影服务", "quantity": 1, "price": 4000.00, "total": 4000.00 },
+      { "name": "视频剪辑", "quantity": 1, "price": 3000.00, "total": 3000.00 }
+    ],
+    "total": 7000.00
   }
 ]
