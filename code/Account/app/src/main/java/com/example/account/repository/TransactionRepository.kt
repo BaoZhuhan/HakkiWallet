@@ -126,4 +126,9 @@ class TransactionRepository @Inject constructor(
         }
         Log.d("TransactionRepository", "normalizeTransactionTypesInDb: updated $updated rows")
     }
+
+    // Expose DAO convenience: return all transactions as a list
+    suspend fun getAllTransactionsList(): List<Transaction> {
+        return transactionDao.getAllTransactionsList()
+    }
 }
